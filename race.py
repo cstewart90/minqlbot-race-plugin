@@ -6,20 +6,17 @@ from urllib.request import urlopen
 class race(minqlbot.Plugin):
     def __init__(self):
         self.add_command("rank", self.cmd_rank)
-        self.add_command("pb", self.cmd_pb)
-        self.add_command("me", self.cmd_pb)
+        self.add_command(("pb", "me"), self.cmd_pb)
         self.add_command("top100", self.cmd_top100)
         self.add_command("time", self.cmd_time)
         self.add_command("ranktime", self.cmd_ranktime)
         self.add_command("avg", self.cmd_avg)
-        self.add_command("spb", self.cmd_spb)
-        self.add_command("sme", self.cmd_spb)
         self.add_command("srank", self.cmd_srank)
+        self.add_command(("spb", "sme"), self.cmd_spb)
         self.add_command("stime", self.cmd_stime)
         self.add_command("sranktime", self.cmd_sranktime)
         self.add_command("savg", self.cmd_savg)
         self.add_command("help", self.cmd_help)
-        # add !top !stop
 
     @staticmethod
     def get_data(map):
@@ -43,7 +40,7 @@ class race(minqlbot.Plugin):
         if len(msg) == 2:
             return msg[1].lower()
         else:
-            return ''.join(e for e in self.game().map if e.isalnum()).lower()
+            return self.game().short_map
 
     @staticmethod
     def say_time(name, rank, last, time, first_time, map, strafe, channel):
@@ -85,11 +82,11 @@ class race(minqlbot.Plugin):
     def cmd_rank(self, player, msg, channel):
         if len(msg) == 1:
             rank = 1
-            map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+            map = self.game().short_map
         elif len(msg) == 2:
             if msg[1].isdigit():
                 rank = int(msg[1])
-                map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+                map = self.game().short_map
             else:
                 rank = 1
                 map = msg[1].lower()
@@ -147,7 +144,7 @@ class race(minqlbot.Plugin):
             return
         elif len(msg) == 2:
             name = msg[1]
-            map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+            map = self.game().short_map
         else:
             name = msg[1]
             map = msg[2].lower()
@@ -174,7 +171,7 @@ class race(minqlbot.Plugin):
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:
             time = int(float(msg[1])*1000)
-            map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+            map = self.game().short_map
         elif len(msg) == 3:
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
@@ -218,11 +215,11 @@ class race(minqlbot.Plugin):
     def cmd_srank(self, player, msg, channel):
         if len(msg) == 1:
             rank = 1
-            map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+            map = self.game().short_map
         elif len(msg) == 2:
             if msg[1].isdigit():
                 rank = int(msg[1])
-                map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+                map = self.game().short_map
             else:
                 rank = 1
                 map = msg[1].lower()
@@ -245,7 +242,7 @@ class race(minqlbot.Plugin):
             return
         elif len(msg) == 2:
             name = msg[1]
-            map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+            map = self.game().short_map
         else:
             name = msg[1]
             map = msg[2].lower()
@@ -266,7 +263,7 @@ class race(minqlbot.Plugin):
     def cmd_sranktime(self, player, msg, channel):
         if len(msg) == 2:
             time = int(float(msg[1])*1000)
-            map = ''.join(e for e in self.game().map if e.isalnum()).lower()
+            map = self.game().short_map
         elif len(msg) == 3:
             time = int(float(msg[1])*1000)
             map = msg[2].lower()

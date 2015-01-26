@@ -306,4 +306,4 @@ class race(minqlbot.Plugin):
             channel.reply("^3{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
 
     def cmd_help(self, player, msg, channel):
-        channel.reply("Commands: ^2!(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
+        channel.reply("Commands: ^3!(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")

@@ -120,13 +120,6 @@ class race(minqlbot.Plugin):
                 return
 
         channel.reply("no time found for {} in top 100".format(player))
-        score = data['scores'][99]
-        name = score['name']
-        last = len(data['scores'])
-        time = score['score']
-        first_time = data['scores'][0]['score']
-
-        race.say_time(name, 100, last, time, first_time, map, False, channel)
 
     def cmd_top100(self, player, msg, channel):
         map = self.get_map(msg)
@@ -162,13 +155,6 @@ class race(minqlbot.Plugin):
                 return
 
         channel.reply("no time found for {} in top 100".format(name))
-        score = data['scores'][99]
-        name = score['name']
-        last = len(data['scores'])
-        time = score['score']
-        first_time = data['scores'][0]['score']
-
-        race.say_time(name, 100, last, time, first_time, map, False, channel)
 
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:

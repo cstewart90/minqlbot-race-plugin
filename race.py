@@ -5,12 +5,14 @@ from urllib.request import urlopen
 
 class race(minqlbot.Plugin):
     def __init__(self):
+        self.add_command("top", self.cmd_top)
         self.add_command("rank", self.cmd_rank)
         self.add_command(("pb", "me"), self.cmd_pb)
         self.add_command("top100", self.cmd_top100)
         self.add_command("time", self.cmd_time)
         self.add_command("ranktime", self.cmd_ranktime)
         self.add_command("avg", self.cmd_avg)
+        self.add_command("stop", self.cmd_stop)
         self.add_command("srank", self.cmd_srank)
         self.add_command(("spb", "sme"), self.cmd_spb)
         self.add_command("stime", self.cmd_stime)
@@ -80,6 +82,19 @@ class race(minqlbot.Plugin):
                 total_rank += score['RANK']
 
         return name, total_rank / total_maps
+
+    def cmd_top(self, player, msg, channel):
+        map = self.get_map(msg)
+        data = self.get_data(map)
+
+        ranks = []
+        for i in range(3):
+            score = data['scores'][i]
+            name = score['name']
+            time = race.fix_time(score['score'])
+            ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
+
+        channel.reply("^2{}: {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
 
     def cmd_rank(self, player, msg, channel):
         if len(msg) == 1:
@@ -184,6 +199,19 @@ class race(minqlbot.Plugin):
             channel.reply("^3{} has no records on ql.leeto.fi".format(name))
         else:
             channel.reply("^3{} ^2average rank is ^3{:.2f}".format(name, average_rank))
+
+    def cmd_stop(self, player, msg, channel):
+        map = self.get_map(msg)
+        data = self.get_data_qlstats(map)
+
+        ranks = []
+        for i in range(3):
+            score = data['data']['scores'][i]
+            name = score['PLAYER']
+            time = race.fix_time(str(score['SCORE']))
+            ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
+
+        channel.reply("^2{}(strafe): {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
 
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)

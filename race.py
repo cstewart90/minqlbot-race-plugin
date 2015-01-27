@@ -27,9 +27,9 @@ class race(minqlbot.Plugin):
         return json.loads(r.read().decode("utf-8"))
 
     @staticmethod
-    def get_data_qlstats(map):
-        base_url = "http://ql.leeto.fi/api/race/maps/"
-        r = urlopen(base_url + map + "?ruleset=pql&weapons=off")
+    def get_data_qlstats(query):
+        base_url = "http://ql.leeto.fi/api/race/"
+        r = urlopen(base_url + query)
         return json.loads(r.read().decode("utf-8"))
 
     @staticmethod
@@ -54,7 +54,7 @@ class race(minqlbot.Plugin):
             time_diff_s = ""
 
         time_s = race.fix_time(time)
-        strafe_s = "^2(STRAFE)" if strafe else ""
+        strafe_s = "^2(strafe)" if strafe else ""
 
         channel.reply(
             "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
@@ -67,9 +67,8 @@ class race(minqlbot.Plugin):
         else:
             name = msg[1]
 
-        on_off = "off" if strafe else "on"
-        r = urlopen("http://ql.leeto.fi/api/race/players/" + name + "?ruleset=pql&weapons=" + on_off)
-        data = json.loads(r.read().decode("utf-8"))
+        strafe_s = "off" if strafe else "on"
+        data = race.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
 
         total_maps = len(data['data']['scores'])
         if total_maps == 0:
@@ -150,7 +149,7 @@ class race(minqlbot.Plugin):
 
     def cmd_time(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: !time [player] [map]")
+            channel.reply("usage: !time player <map>")
             return
         elif len(msg) == 2:
             name = msg[1]
@@ -179,7 +178,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: !ranktime [time] [map]")
+            channel.reply("usage: !ranktime time <map>")
             return
 
         data = race.get_data(map)
@@ -202,7 +201,7 @@ class race(minqlbot.Plugin):
 
     def cmd_stop(self, player, msg, channel):
         map = self.get_map(msg)
-        data = self.get_data_qlstats(map)
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         ranks = []
         for i in range(3):
@@ -216,7 +215,7 @@ class race(minqlbot.Plugin):
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)
 
-        data = race.get_data_qlstats(map)
+        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         for score in data['data']['scores']:
             if player.clean_name.lower() == str(score['PLAYER']).lower():
@@ -243,7 +242,7 @@ class race(minqlbot.Plugin):
             rank = int(msg[1])
             map = msg[2].lower()
 
-        data = race.get_data_qlstats(map)
+        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         score = data['data']['scores'][rank - 1]
         name = score['PLAYER']
@@ -254,7 +253,7 @@ class race(minqlbot.Plugin):
 
     def cmd_stime(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: !stime [player] [map]")
+            channel.reply("usage: !stime player <map>")
             return
         elif len(msg) == 2:
             name = msg[1]
@@ -263,7 +262,7 @@ class race(minqlbot.Plugin):
             name = msg[1]
             map = msg[2].lower()
 
-        data = race.get_data_qlstats(map)
+        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         for score in data['data']['scores']:
             if name.lower() == str(score['PLAYER']).lower():
@@ -284,10 +283,10 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: !ranktime [time] [map]")
+            channel.reply("usage: !sranktime time <map>")
             return
 
-        data = race.get_data_qlstats(map)
+        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         time_s = race.fix_time(str(time))
         last = len(data['data']['scores'])
 

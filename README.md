@@ -7,8 +7,11 @@ Follow the instruction on https://github.com/MinoMino/minqlbot to run the bot. P
 # Commands
 s in front of a command means strafe. Optional arguments are surrounded by <>.
 
-**!help**
+**!commands**
 >Show all the commands.
+
+**!help**
+>Show a link to this page.
 
 **!(s)top <map>**
 >Show top 3 times for the the map.

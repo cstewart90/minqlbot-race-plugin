@@ -238,7 +238,7 @@ class race(minqlbot.Plugin):
         channel.reply("^3{} ^2would not be in top ^3{}".format(time_s, last))
 
     def cmd_avg(self, player, msg, channel):
-        name, average_rank = race.get_average(player, msg, False)
+        name, average_rank = self.get_average(player, msg, False)
         if average_rank == 0:
             channel.reply("^3{} has no records on ql.leeto.fi".format(name))
         else:
@@ -343,7 +343,7 @@ class race(minqlbot.Plugin):
         channel.reply("^3{} ^2would be rank ^3{}".format(time_s, last+1))
 
     def cmd_savg(self, player, msg, channel):
-        name, average_rank = race.get_average(player, msg, True)
+        name, average_rank = self.get_average(player, msg, True)
         if average_rank == 0:
             channel.reply("^3{} has no records on ql.leeto.fi".format(name))
         else:

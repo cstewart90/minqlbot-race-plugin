@@ -117,6 +117,20 @@ class race(minqlbot.Plugin):
 
         return name, total_rank / total_maps
 
+    def check_pb(self, text):
+        text_list = text.split()
+        name = text_list[-7]
+        name_clean = re.sub(r"\^[0-9]", "", name).lower()
+        time_list = re.findall("[0-9]+", text_list[-1])
+        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
+        data = self.get_data_file("times.json")
+        pb = data['scores'][-1]['score']
+        for score in data['scores']:
+            if name_clean == str(score['name']).lower():
+                pb = int(score['score'])
+        if time < pb:
+            self.send_command("say {} ^2got a new PB!".format(name))
+
     def handle_bot_connect(self):
         self.write_data()
         self.write_data_qlstats()
@@ -130,24 +144,9 @@ class race(minqlbot.Plugin):
         self.write_data_qlstats()
 
     def handle_console(self, text):
-        if "finished the race in in" not in text:
+        if "finished the race in in" in text:
+            self.check_pb(text)
             return
-
-        text_list = text.split()
-        name = text_list[-7]
-        name_clean = re.sub(r"\^[0-9]", "", name).lower()
-        self.debug(name_clean)
-        time_list = re.findall("[0-9]+", text_list[-1])
-        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
-
-        data = self.get_data_file("times.json")
-        pb = data['scores'][-1]['score']
-        for score in data['scores']:
-            if name_clean == str(score['name']).lower():
-                pb = int(score['score'])
-
-        if time < pb:
-            self.send_command("say {} ^2got a new PB!".format(name))
 
     def cmd_top(self, player, msg, channel):
         map = self.get_map(msg)

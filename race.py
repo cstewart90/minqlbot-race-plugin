@@ -5,14 +5,14 @@ from urllib.request import urlopen
 
 class race(minqlbot.Plugin):
     def __init__(self):
-        self.add_command("top", self.cmd_top)
+        self.add_command(("top", "top3"), self.cmd_top)
         self.add_command("rank", self.cmd_rank)
         self.add_command(("pb", "me"), self.cmd_pb)
         self.add_command("top100", self.cmd_top100)
         self.add_command("time", self.cmd_time)
         self.add_command("ranktime", self.cmd_ranktime)
         self.add_command("avg", self.cmd_avg)
-        self.add_command("stop", self.cmd_stop)
+        self.add_command(("stop", "stop3"), self.cmd_stop)
         self.add_command("srank", self.cmd_srank)
         self.add_command(("spb", "sme"), self.cmd_spb)
         self.add_command("stime", self.cmd_stime)

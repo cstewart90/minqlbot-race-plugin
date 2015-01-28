@@ -28,11 +28,13 @@ class race(minqlbot.Plugin):
         data = race.get_data_online(self.game().short_map)
         with open('times.json', 'w') as outfile:
             json.dump(data, outfile)
+            self.debug("wrote times.json")
 
     def write_data_qlstats(self):
         data = race.get_data_online_qlstats("maps/" + self.game().short_map + "?ruleset=pql&weapons=off")
         with open('times_strafe.json', 'w') as outfile:
             json.dump(data, outfile)
+            self.debug("wrote times_strafe.json")
 
     def get_data(self, map):
         if map == self.game().short_map:

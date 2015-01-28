@@ -22,6 +22,7 @@ class race(minqlbot.Plugin):
         self.add_command("sranktime", self.cmd_sranktime)
         self.add_command("savg", self.cmd_savg)
         self.add_command("help", self.cmd_help)
+        self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
 
     def write_data(self):
@@ -349,6 +350,9 @@ class race(minqlbot.Plugin):
             channel.reply("^3{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
 
     def cmd_help(self, player, msg, channel):
+        channel.reply("Go to ^6tinyurl.com/racebot ^3!commands ^3for a list of commands")
+
+    def cmd_commands(self, player, msg, channel):
         channel.reply("Commands: ^3!(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
 
     def cmd_update(self, player, msg, channel):

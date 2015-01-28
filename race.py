@@ -5,6 +5,9 @@ from urllib.request import urlopen
 
 class race(minqlbot.Plugin):
     def __init__(self):
+        self.add_hook("bot_connect", self.handle_bot_connect)
+        self.add_hook("map", self.handle_map)
+        self.add_hook("game_end", self.handle_game_end)
         self.add_command(("top", "top3"), self.cmd_top)
         self.add_command("rank", self.cmd_rank)
         self.add_command(("pb", "me"), self.cmd_pb)
@@ -19,12 +22,29 @@ class race(minqlbot.Plugin):
         self.add_command("sranktime", self.cmd_sranktime)
         self.add_command("savg", self.cmd_savg)
         self.add_command("help", self.cmd_help)
+        self.add_command("update", self.cmd_update)
+
+    def write_data(self):
+        data = race.get_data_online(self.game().short_map)
+        with open('map_times.json', 'w') as outfile:
+            json.dump(data, outfile)
+
+    def get_data(self, map):
+        if map == self.game().short_map:
+            return race.get_data_file()
+        else:
+            return race.get_data_online(map)
 
     @staticmethod
-    def get_data(map):
+    def get_data_online(map):
         base_url = "http://quakelive.com/race/map/"
         r = urlopen(base_url + map)
         return json.loads(r.read().decode("utf-8"))
+
+    @staticmethod
+    def get_data_file():
+        with open("map_times.json") as json_file:
+            return json.load(json_file)
 
     @staticmethod
     def get_data_qlstats(query):
@@ -82,6 +102,15 @@ class race(minqlbot.Plugin):
 
         return name, total_rank / total_maps
 
+    def handle_bot_connect(self):
+        self.write_data()
+
+    def handle_map(self, map):
+        self.write_data()
+
+    def handle_game_end(self, game, score, winner):
+        self.write_data()
+
     def cmd_top(self, player, msg, channel):
         map = self.get_map(msg)
         data = self.get_data(map)
@@ -110,7 +139,7 @@ class race(minqlbot.Plugin):
             rank = int(msg[1])
             map = msg[2].lower()
 
-        data = race.get_data(map)
+        data = self.get_data(map)
 
         score = data['scores'][rank - 1]
         name = score['name']
@@ -122,7 +151,7 @@ class race(minqlbot.Plugin):
 
     def cmd_pb(self, player, msg, channel):
         map = self.get_map(msg)
-        data = race.get_data(map)
+        data = self.get_data(map)
 
         for i, score in enumerate(data['scores']):
             if player.clean_name.lower() == str(score['name']).lower():
@@ -137,7 +166,7 @@ class race(minqlbot.Plugin):
 
     def cmd_top100(self, player, msg, channel):
         map = self.get_map(msg)
-        data = race.get_data(map)
+        data = self.get_data(map)
 
         score = data['scores'][99]
         name = score['name']
@@ -158,7 +187,7 @@ class race(minqlbot.Plugin):
             name = msg[1]
             map = msg[2].lower()
 
-        data = race.get_data(map)
+        data = self.get_data(map)
 
         for i, score in enumerate(data['scores']):
             if name.lower() == str(score['name']).lower():
@@ -181,7 +210,7 @@ class race(minqlbot.Plugin):
             channel.reply("usage: !ranktime time <map>")
             return
 
-        data = race.get_data(map)
+        data = self.get_data(map)
         time_s = race.fix_time(str(time))
         last = len(data['scores'])
 
@@ -306,3 +335,6 @@ class race(minqlbot.Plugin):
 
     def cmd_help(self, player, msg, channel):
         channel.reply("Commands: ^3!(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
+
+    def cmd_update(self, player, msg, channel):
+        self.write_data()

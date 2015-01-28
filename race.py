@@ -26,14 +26,25 @@ class race(minqlbot.Plugin):
 
     def write_data(self):
         data = race.get_data_online(self.game().short_map)
-        with open('map_times.json', 'w') as outfile:
+        with open('times.json', 'w') as outfile:
+            json.dump(data, outfile)
+
+    def write_data_qlstats(self):
+        data = race.get_data_online_qlstats("maps/" + self.game().short_map + "?ruleset=pql&weapons=off")
+        with open('times_strafe.json', 'w') as outfile:
             json.dump(data, outfile)
 
     def get_data(self, map):
         if map == self.game().short_map:
-            return race.get_data_file()
-        else:
-            return race.get_data_online(map)
+            return race.get_data_file("times.json")
+        return race.get_data_online(map)
+
+    def get_data_qlstats(self, query):
+        if "maps/" in query:
+            map = query.replace("maps/", "").replace("?ruleset=pql&weapons=off", "")
+            if map == self.game().short_map:
+                return self.get_data_file("times_strafe.json")
+        return race.get_data_online_qlstats(query)
 
     @staticmethod
     def get_data_online(map):
@@ -42,15 +53,15 @@ class race(minqlbot.Plugin):
         return json.loads(r.read().decode("utf-8"))
 
     @staticmethod
-    def get_data_file():
-        with open("map_times.json") as json_file:
-            return json.load(json_file)
-
-    @staticmethod
-    def get_data_qlstats(query):
+    def get_data_online_qlstats(query):
         base_url = "http://ql.leeto.fi/api/race/"
         r = urlopen(base_url + query)
         return json.loads(r.read().decode("utf-8"))
+
+    @staticmethod
+    def get_data_file(file):
+        with open(file) as json_file:
+            return json.load(json_file)
 
     @staticmethod
     def fix_time(time):
@@ -80,15 +91,14 @@ class race(minqlbot.Plugin):
             "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
                                                                               map, strafe_s))
 
-    @staticmethod
-    def get_average(player, msg, strafe):
+    def get_average(self, player, msg, strafe):
         if len(msg) == 1:
             name = player.clean_name
         else:
             name = msg[1]
 
         strafe_s = "off" if strafe else "on"
-        data = race.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
+        data = self.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
 
         total_maps = len(data['data']['scores'])
         if total_maps == 0:
@@ -104,12 +114,15 @@ class race(minqlbot.Plugin):
 
     def handle_bot_connect(self):
         self.write_data()
+        self.write_data_qlstats()
 
     def handle_map(self, map):
         self.write_data()
+        self.write_data_qlstats()
 
     def handle_game_end(self, game, score, winner):
         self.write_data()
+        self.write_data_qlstats()
 
     def cmd_top(self, player, msg, channel):
         map = self.get_map(msg)
@@ -244,7 +257,7 @@ class race(minqlbot.Plugin):
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)
 
-        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         for score in data['data']['scores']:
             if player.clean_name.lower() == str(score['PLAYER']).lower():
@@ -271,7 +284,7 @@ class race(minqlbot.Plugin):
             rank = int(msg[1])
             map = msg[2].lower()
 
-        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         score = data['data']['scores'][rank - 1]
         name = score['PLAYER']
@@ -291,7 +304,7 @@ class race(minqlbot.Plugin):
             name = msg[1]
             map = msg[2].lower()
 
-        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
         for score in data['data']['scores']:
             if name.lower() == str(score['PLAYER']).lower():
@@ -315,7 +328,7 @@ class race(minqlbot.Plugin):
             channel.reply("usage: !sranktime time <map>")
             return
 
-        data = race.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         time_s = race.fix_time(str(time))
         last = len(data['data']['scores'])
 
@@ -338,3 +351,4 @@ class race(minqlbot.Plugin):
 
     def cmd_update(self, player, msg, channel):
         self.write_data()
+        self.write_data_qlstats()

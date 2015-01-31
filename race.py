@@ -1,7 +1,7 @@
 import minqlbot
 import json
 import re
-from urllib.request import urlopen
+import urllib.request
 
 
 class race(minqlbot.Plugin):
@@ -54,14 +54,20 @@ class race(minqlbot.Plugin):
     @staticmethod
     def get_data_online(map):
         base_url = "http://quakelive.com/race/map/"
-        r = urlopen(base_url + map)
-        return json.loads(r.read().decode("utf-8"))
+        url = base_url + map
+        request = urllib.request.Request(url,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
+        response = urllib.request.urlopen(request)
+        return json.loads(response.read().decode("utf-8"))
 
     @staticmethod
     def get_data_online_qlstats(query):
         base_url = "http://ql.leeto.fi/api/race/"
-        r = urlopen(base_url + query)
-        return json.loads(r.read().decode("utf-8"))
+        url = base_url + query
+        request = urllib.request.Request(url,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
+        response = urllib.request.urlopen(request)
+        return json.loads(response.read().decode("utf-8"))
 
     @staticmethod
     def get_data_file(file):

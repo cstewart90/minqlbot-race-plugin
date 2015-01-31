@@ -81,6 +81,7 @@ class race(minqlbot.Plugin):
 
     @staticmethod
     def fix_time(time):
+        time = str(time)
         if len(time) < 4:
             return "0." + time[-3:]
         return time[:-3] + "." + time[-3:]
@@ -113,6 +114,21 @@ class race(minqlbot.Plugin):
         time = str(score['score'])
         first_time = str(data['scores'][0]['score'])
         return name, time, first_time
+
+    def get_pb(self, data, player):
+        for i, score in enumerate(data['scores']):
+            if player.lower() == str(score['name']).lower():
+                time = score['score']
+                rank = i + 1
+                first_time = data['scores'][0]['score']
+                return rank, time, first_time
+        return -1, -1, -1
+
+    def get_rank_from_time(self, data, time):
+        for i, score in enumerate(data['scores']):
+            if time < int(score['score']):
+                return i + 1
+        return -1
 
     def get_average(self, player, msg, strafe):
         if len(msg) == 1:
@@ -203,29 +219,20 @@ class race(minqlbot.Plugin):
     def cmd_pb(self, player, msg, channel):
         map = self.get_map(msg)
         data = self.get_data(map)
-
-        for i, score in enumerate(data['scores']):
-            if player.clean_name.lower() == str(score['name']).lower():
-                last = len(data['scores'])
-                time = score['score']
-                first_time = data['scores'][0]['score']
-
-                race.say_time(player, i + 1, last, time, first_time, map, False, channel)
-                return
-
-        channel.reply("no time found for {} in top 100".format(player))
+        rank, time, first_time = self.get_pb(data, player.clean_name)
+        last = len(data['scores'])
+        if rank != -1:
+            race.say_time(player, rank, last, time, first_time, map, False, channel)
+        else:
+            channel.reply("no time found for {} in top 100".format(player))
 
     def cmd_top100(self, player, msg, channel):
         map = self.get_map(msg)
         data = self.get_data(map)
-
-        score = data['scores'][99]
-        name = score['name']
         last = len(data['scores'])
-        time = score['score']
-        first_time = data['scores'][0]['score']
+        name, time, first_time = self.get_rank(data, last)
 
-        race.say_time(name, 100, last, time, first_time, map, False, channel)
+        race.say_time(name, last, last, time, first_time, map, False, channel)
 
     def cmd_time(self, player, msg, channel):
         if len(msg) == 1:
@@ -239,16 +246,13 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data(map)
+        rank, time, first_time = self.get_pb(data, name)
+        last = len(data['scores'])
 
-        for i, score in enumerate(data['scores']):
-            if name.lower() == str(score['name']).lower():
-                last = len(data['scores'])
-                time = score['score']
-                first_time = data['scores'][0]['score']
-                race.say_time(name, i + 1, last, time, first_time, map, False, channel)
-                return
-
-        channel.reply("no time found for {} in top 100".format(name))
+        if rank != -1:
+            race.say_time(name, rank, last, time, first_time, map, False, channel)
+        else:
+            channel.reply("no time found for {} in top 100".format(name))
 
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:
@@ -263,14 +267,13 @@ class race(minqlbot.Plugin):
 
         data = self.get_data(map)
         time_s = race.fix_time(str(time))
+        rank = self.get_rank_from_time(data, time)
         last = len(data['scores'])
 
-        for i, score in enumerate(data['scores']):
-            if time < int(score['score']):
-                channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, i+1, last, map))
-                return
-
-        channel.reply("^3{} ^2would not be in top ^3{}".format(time_s, last))
+        if rank != -1:
+            channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, rank, last, map))
+        else:
+            channel.reply("^3{} ^2would not be in top ^3{}".format(time_s, last))
 
     def cmd_avg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, False)
@@ -294,18 +297,13 @@ class race(minqlbot.Plugin):
 
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)
-
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-
-        for score in data['scores']:
-            if player.clean_name.lower() == str(score['name']).lower():
-                last = len(data['scores'])
-                time = str(score['score'])
-                first_time = str(data['scores'][0]['score'])
-                race.say_time(player, score['RANK'], last, time, first_time, map, True, channel)
-                return
-
-        channel.reply("No time was found for {}".format(player))
+        rank, time, first_time = self.get_pb(data, player.clean_name)
+        last = len(data['scores'])
+        if rank != -1:
+            race.say_time(player, rank, last, time, first_time, map, True, channel)
+        else:
+            channel.reply("No time was found for {}".format(player))
 
     def cmd_srank(self, player, msg, channel):
         if len(msg) == 1:
@@ -325,8 +323,7 @@ class race(minqlbot.Plugin):
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         name, time, first_time = self.get_rank(data, rank)
         last = len(data['scores'])
-        
-        
+
         race.say_time(name, rank, last, time, first_time, map, True, channel)
 
     def cmd_stime(self, player, msg, channel):
@@ -341,17 +338,13 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        rank, time, first_time = self.get_pb(data, name)
+        last = len(data['scores'])
 
-        for score in data['scores']:
-            if name.lower() == str(score['name']).lower():
-                name = score['name']
-                last = len(data['scores'])
-                time = str(score['score'])
-                first_time = str(data['scores'][0]['score'])
-                race.say_time(name, score['RANK'], last, time, first_time, map, True, channel)
-                return
-
-        channel.reply("No time was found for {}".format(name))
+        if rank != -1:
+            race.say_time(name, rank, last, time, first_time, map, True, channel)
+        else:
+            channel.reply("No time was found for {}".format(name))
 
     def cmd_sranktime(self, player, msg, channel):
         if len(msg) == 2:
@@ -365,15 +358,14 @@ class race(minqlbot.Plugin):
             return
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        rank = self.get_rank_from_time(data, time)
         time_s = race.fix_time(str(time))
         last = len(data['scores'])
 
-        for i, score in enumerate(data['scores']):
-            if time < int(score['score']):
-                channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, i+1, last, map))
-                return
-
-        channel.reply("^3{} ^2would be rank ^3{}".format(time_s, last+1))
+        if rank != -1:
+            channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, rank, last, map))
+        else:
+            channel.reply("^3{} ^2would be rank ^3{}".format(time_s, last+1))
 
     def cmd_savg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, True)

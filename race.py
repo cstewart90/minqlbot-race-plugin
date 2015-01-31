@@ -67,7 +67,12 @@ class race(minqlbot.Plugin):
         request = urllib.request.Request(url,
             headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
         response = urllib.request.urlopen(request)
-        return json.loads(response.read().decode("utf-8"))
+        j = json.loads(response.read().decode("utf-8"))
+        data = j['data']
+        for score in data['scores']:
+            score['name'] = score.pop('PLAYER')
+            score['score'] = score.pop('SCORE')
+        return data
 
     @staticmethod
     def get_data_file(file):
@@ -102,6 +107,13 @@ class race(minqlbot.Plugin):
             "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
                                                                               map, strafe_s))
 
+    def get_rank(self, data, rank):
+        score = data['scores'][rank - 1]
+        name = score['name']
+        time = str(score['score'])
+        first_time = str(data['scores'][0]['score'])
+        return name, time, first_time
+
     def get_average(self, player, msg, strafe):
         if len(msg) == 1:
             name = player.clean_name
@@ -111,12 +123,12 @@ class race(minqlbot.Plugin):
         strafe_s = "off" if strafe else "on"
         data = self.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
 
-        total_maps = len(data['data']['scores'])
+        total_maps = len(data['scores'])
         if total_maps == 0:
             return name, 0
 
         total_rank = 0
-        for score in data['data']['scores']:
+        for score in data['scores']:
             # don't include removed maps
             if score['MAP'] != "bloodlust" and score['MAP'] != "doubleimpact" and score['MAP'] != "eviscerated":
                 total_rank += score['RANK']
@@ -183,12 +195,8 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data(map)
-
-        score = data['scores'][rank - 1]
-        name = score['name']
+        name, time, first_time = self.get_rank(data, rank)
         last = len(data['scores'])
-        time = score['score']
-        first_time = data['scores'][0]['score']
 
         race.say_time(name, rank, last, time, first_time, map, False, channel)
 
@@ -277,9 +285,9 @@ class race(minqlbot.Plugin):
 
         ranks = []
         for i in range(3):
-            score = data['data']['scores'][i]
-            name = score['PLAYER']
-            time = race.fix_time(str(score['SCORE']))
+            score = data['scores'][i]
+            name = score['name']
+            time = race.fix_time(str(score['score']))
             ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
         channel.reply("^2{}(strafe): {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
@@ -289,11 +297,11 @@ class race(minqlbot.Plugin):
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
-        for score in data['data']['scores']:
-            if player.clean_name.lower() == str(score['PLAYER']).lower():
-                last = len(data['data']['scores'])
-                time = str(score['SCORE'])
-                first_time = str(data['data']['scores'][0]['SCORE'])
+        for score in data['scores']:
+            if player.clean_name.lower() == str(score['name']).lower():
+                last = len(data['scores'])
+                time = str(score['score'])
+                first_time = str(data['scores'][0]['score'])
                 race.say_time(player, score['RANK'], last, time, first_time, map, True, channel)
                 return
 
@@ -315,13 +323,11 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-
-        score = data['data']['scores'][rank - 1]
-        name = score['PLAYER']
-        last = len(data['data']['scores'])
-        time = str(score['SCORE'])
-        first_time = str(data['data']['scores'][0]['SCORE'])
-        race.say_time(name, score['RANK'], last, time, first_time, map, True, channel)
+        name, time, first_time = self.get_rank(data, rank)
+        last = len(data['scores'])
+        
+        
+        race.say_time(name, rank, last, time, first_time, map, True, channel)
 
     def cmd_stime(self, player, msg, channel):
         if len(msg) == 1:
@@ -336,12 +342,12 @@ class race(minqlbot.Plugin):
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
 
-        for score in data['data']['scores']:
-            if name.lower() == str(score['PLAYER']).lower():
-                name = score['PLAYER']
-                last = len(data['data']['scores'])
-                time = str(score['SCORE'])
-                first_time = str(data['data']['scores'][0]['SCORE'])
+        for score in data['scores']:
+            if name.lower() == str(score['name']).lower():
+                name = score['name']
+                last = len(data['scores'])
+                time = str(score['score'])
+                first_time = str(data['scores'][0]['score'])
                 race.say_time(name, score['RANK'], last, time, first_time, map, True, channel)
                 return
 
@@ -360,10 +366,10 @@ class race(minqlbot.Plugin):
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         time_s = race.fix_time(str(time))
-        last = len(data['data']['scores'])
+        last = len(data['scores'])
 
-        for i, score in enumerate(data['data']['scores']):
-            if time < int(score['SCORE']):
+        for i, score in enumerate(data['scores']):
+            if time < int(score['score']):
                 channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, i+1, last, map))
                 return
 

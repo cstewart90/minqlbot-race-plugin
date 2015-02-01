@@ -104,7 +104,7 @@ class race(minqlbot.Plugin):
         strafe_s = "^2(strafe)" if strafe else ""
 
         channel.reply(
-            "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
+            "^3{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
                                                                               map, strafe_s))
 
     def get_rank(self, data, rank):
@@ -163,7 +163,10 @@ class race(minqlbot.Plugin):
                 pb = int(score['score'])
         if time < pb:
             rank = self.get_rank_from_time(data, time)
-            self.send_command("say {} ^2broke their PB and is now rank {}!".format(name, rank))
+            if rank == 1:
+                self.send_command("say ^3{} ^6just got a world record!".format(name))
+            else:
+                self.send_command("say ^3{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
 
     def handle_bot_connect(self):
         self.write_data()

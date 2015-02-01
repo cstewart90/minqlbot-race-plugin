@@ -163,7 +163,8 @@ class race(minqlbot.Plugin):
             if name_clean == str(score['name']).lower():
                 pb = int(score['score'])
         if time < pb:
-            self.send_command("say {} ^2got a new PB!".format(name))
+            rank = self.get_rank_from_time(data, time)
+            self.send_command("say {} ^2broke their PB and is now rank {}!".format(name, rank))
 
     def handle_bot_connect(self):
         self.write_data()

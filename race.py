@@ -8,7 +8,6 @@ class race(minqlbot.Plugin):
     def __init__(self):
         self.add_hook("bot_connect", self.handle_bot_connect)
         self.add_hook("map", self.handle_map)
-        self.add_hook("game_end", self.handle_game_end)
         self.add_hook("console", self.handle_console)
         self.add_command(("top", "top3"), self.cmd_top)
         self.add_command("rank", self.cmd_rank)
@@ -171,10 +170,6 @@ class race(minqlbot.Plugin):
         self.write_data_qlstats()
 
     def handle_map(self, map):
-        self.write_data()
-        self.write_data_qlstats()
-
-    def handle_game_end(self, game, score, winner):
         self.write_data()
         self.write_data_qlstats()
 

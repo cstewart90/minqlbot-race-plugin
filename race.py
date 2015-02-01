@@ -104,7 +104,7 @@ class race(minqlbot.Plugin):
         strafe_s = "^2(strafe)" if strafe else ""
 
         channel.reply(
-            "^3{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
+            "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
                                                                               map, strafe_s))
 
     def get_rank(self, data, rank):
@@ -277,9 +277,9 @@ class race(minqlbot.Plugin):
     def cmd_avg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, False)
         if average_rank == 0:
-            channel.reply("^3{} has no records on ql.leeto.fi".format(name))
+            channel.reply("^7{} has no records on ql.leeto.fi".format(name))
         else:
-            channel.reply("^3{} ^2average rank is ^3{:.2f}".format(name, average_rank))
+            channel.reply("^7{} ^2average rank is ^3{:.2f}".format(name, average_rank))
 
     def cmd_stop(self, player, msg, channel):
         map = self.get_map(msg)
@@ -369,9 +369,9 @@ class race(minqlbot.Plugin):
     def cmd_savg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, True)
         if average_rank == 0:
-            channel.reply("^3{} has no records on ql.leeto.fi".format(name))
+            channel.reply("^7{} has no records on ql.leeto.fi".format(name))
         else:
-            channel.reply("^3{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
+            channel.reply("^7{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
 
     def cmd_help(self, player, msg, channel):
         channel.reply("Go to ^6tinyurl.com/qlracebot ^3!commands ^2for a list of commands")

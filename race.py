@@ -140,6 +140,9 @@ class race(minqlbot.Plugin):
         strafe_s = "off" if strafe else "on"
         data = self.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
 
+        if len(data['scores']) == 0:
+            return name, 0
+
         total_rank = 0
         total_maps = 0
         for score in data['scores']:

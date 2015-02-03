@@ -140,15 +140,13 @@ class race(minqlbot.Plugin):
         strafe_s = "off" if strafe else "on"
         data = self.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
 
-        total_maps = len(data['scores'])
-        if total_maps == 0:
-            return name, 0
-
         total_rank = 0
+        total_maps = 0
         for score in data['scores']:
             # don't include removed maps
             if score['MAP'] != "bloodlust" and score['MAP'] != "doubleimpact" and score['MAP'] != "eviscerated":
                 total_rank += score['RANK']
+                total_maps += 1
         return name, total_rank / total_maps
 
     def check_pb(self, text):

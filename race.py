@@ -166,9 +166,9 @@ class race(minqlbot.Plugin):
         if time < pb:
             rank = self.get_rank_from_time(data, time)
             if rank == 1:
-                self.send_command("say ^3{} ^6just got a world record!".format(name))
+                self.send_command("say ^7{} ^6just got a world record!".format(name))
             else:
-                self.send_command("say ^3{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
+                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
 
     def handle_bot_connect(self):
         self.write_data()
@@ -225,7 +225,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(player, rank, last, time, first_time, map, False, channel)
         else:
-            channel.reply("no time found for {} in top 100".format(player))
+            channel.reply("no time found for ^7{} ^2in top 100".format(player))
 
     def cmd_top100(self, player, msg, channel):
         map = self.get_map(msg)
@@ -237,7 +237,7 @@ class race(minqlbot.Plugin):
 
     def cmd_time(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: !time player <map>")
+            channel.reply("usage: ^3!time player <map>")
             return
         elif len(msg) == 2:
             name = msg[1]
@@ -253,7 +253,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(name, rank, last, time, first_time, map, False, channel)
         else:
-            channel.reply("no time found for {} in top 100".format(name))
+            channel.reply("no time found for ^7{} ^2in top 100".format(name))
 
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:
@@ -263,7 +263,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: !ranktime time <map>")
+            channel.reply("usage: ^3!ranktime time <map>")
             return
 
         data = self.get_data(map)
@@ -279,7 +279,7 @@ class race(minqlbot.Plugin):
     def cmd_avg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, False)
         if average_rank == 0:
-            channel.reply("^7{} has no records on ql.leeto.fi".format(name))
+            channel.reply("^7{} ^2has no records on ql.leeto.fi".format(name))
         else:
             channel.reply("^7{} ^2average rank is ^3{:.2f}".format(name, average_rank))
 
@@ -304,7 +304,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(player, rank, last, time, first_time, map, True, channel)
         else:
-            channel.reply("No time was found for {}".format(player))
+            channel.reply("No time was found for ^7{}".format(player))
 
     def cmd_srank(self, player, msg, channel):
         if len(msg) == 1:
@@ -329,7 +329,7 @@ class race(minqlbot.Plugin):
 
     def cmd_stime(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: !stime player <map>")
+            channel.reply("usage: ^3!stime player <map>")
             return
         elif len(msg) == 2:
             name = msg[1]
@@ -345,7 +345,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(name, rank, last, time, first_time, map, True, channel)
         else:
-            channel.reply("No time was found for {}".format(name))
+            channel.reply("No time was found for ^7{}".format(name))
 
     def cmd_sranktime(self, player, msg, channel):
         if len(msg) == 2:
@@ -355,7 +355,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: !sranktime time <map>")
+            channel.reply("usage: ^3!sranktime time <map>")
             return
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
@@ -371,7 +371,7 @@ class race(minqlbot.Plugin):
     def cmd_savg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, True)
         if average_rank == 0:
-            channel.reply("^7{} has no records on ql.leeto.fi".format(name))
+            channel.reply("^7{} ^2has no records on ql.leeto.fi".format(name))
         else:
             channel.reply("^7{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
 
@@ -388,7 +388,7 @@ class race(minqlbot.Plugin):
         self.send_command("cv map {}".format(random.choice(maps)))
 
     def cmd_help(self, player, msg, channel):
-        channel.reply("Go to ^6tinyurl.com/qlracebot ^3!commands ^2for a list of commands")
+        channel.reply("Go to ^6tinyurl.com/qlracebot ^2also do ^3!commands ^2for a list of commands")
 
     def cmd_commands(self, player, msg, channel):
         channel.reply("Commands: ^3!(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")

@@ -166,7 +166,7 @@ class race(minqlbot.Plugin):
         if time < pb:
             rank = self.get_rank_from_time(data, time)
             if rank == 1:
-                self.send_command("say ^7{} ^6just got a world record!".format(name))
+                self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
             else:
                 self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
 

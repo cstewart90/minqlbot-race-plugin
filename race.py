@@ -28,148 +28,6 @@ class race(minqlbot.Plugin):
         self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
 
-    def write_data(self):
-        data = race.get_data_online(self.game().short_map)
-        with open('times.json', 'w') as outfile:
-            json.dump(data, outfile)
-            self.debug("wrote times.json")
-
-    def write_data_qlstats(self):
-        data = race.get_data_online_qlstats("maps/" + self.game().short_map + "?ruleset=pql&weapons=off")
-        with open('times_strafe.json', 'w') as outfile:
-            json.dump(data, outfile)
-            self.debug("wrote times_strafe.json")
-
-    def get_data(self, map):
-        if map == self.game().short_map:
-            return race.get_data_file("times.json")
-        return race.get_data_online(map)
-
-    def get_data_qlstats(self, query):
-        if "maps/" in query:
-            map = query.replace("maps/", "").replace("?ruleset=pql&weapons=off", "")
-            if map == self.game().short_map:
-                return self.get_data_file("times_strafe.json")
-        return race.get_data_online_qlstats(query)
-
-    @staticmethod
-    def get_data_online(map):
-        base_url = "http://quakelive.com/race/map/"
-        url = base_url + map
-        request = urllib.request.Request(url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
-        response = urllib.request.urlopen(request)
-        return json.loads(response.read().decode("utf-8"))
-
-    @staticmethod
-    def get_data_online_qlstats(query):
-        base_url = "http://ql.leeto.fi/api/race/"
-        url = base_url + query
-        request = urllib.request.Request(url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
-        response = urllib.request.urlopen(request)
-        j = json.loads(response.read().decode("utf-8"))
-        data = j['data']
-        for score in data['scores']:
-            score['name'] = score.pop('PLAYER')
-            score['score'] = score.pop('SCORE')
-        return data
-
-    @staticmethod
-    def get_data_file(file):
-        with open(file) as json_file:
-            return json.load(json_file)
-
-    @staticmethod
-    def fix_time(time):
-        time = str(time)
-        if len(time) < 4:
-            return "0." + time[-3:]
-        return time[:-3] + "." + time[-3:]
-
-    def get_map(self, msg):
-        if len(msg) == 2:
-            return msg[1].lower()
-        else:
-            return self.game().short_map
-
-    @staticmethod
-    def say_time(name, rank, last, time, first_time, map, strafe, channel):
-        if rank != 1:
-            time_diff = str(int(time) - int(first_time))
-            time_diff = time_diff.zfill(3)
-            time_diff_s = "^8[^1+" + race.fix_time(str(time_diff)) + "^8]"
-        else:
-            time_diff_s = ""
-
-        time_s = race.fix_time(time)
-        strafe_s = "^2(strafe)" if strafe else ""
-
-        channel.reply(
-            "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
-                                                                              map, strafe_s))
-
-    def get_rank(self, data, rank):
-        score = data['scores'][rank - 1]
-        name = score['name']
-        time = str(score['score'])
-        first_time = str(data['scores'][0]['score'])
-        return name, time, first_time
-
-    def get_pb(self, data, player):
-        for i, score in enumerate(data['scores']):
-            if player.lower() == str(score['name']).lower():
-                time = score['score']
-                rank = i + 1
-                first_time = data['scores'][0]['score']
-                return rank, time, first_time
-        return -1, -1, -1
-
-    def get_rank_from_time(self, data, time):
-        for i, score in enumerate(data['scores']):
-            if time < int(score['score']):
-                return i + 1
-        return -1
-
-    def get_average(self, player, msg, strafe):
-        if len(msg) == 1:
-            name = player.clean_name
-        else:
-            name = msg[1]
-
-        strafe_s = "off" if strafe else "on"
-        data = self.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
-
-        if len(data['scores']) == 0:
-            return name, 0
-
-        total_rank = 0
-        total_maps = 0
-        for score in data['scores']:
-            # don't include removed maps
-            if score['MAP'] != "bloodlust" and score['MAP'] != "doubleimpact" and score['MAP'] != "eviscerated":
-                total_rank += score['RANK']
-                total_maps += 1
-        return name, total_rank / total_maps
-
-    def check_pb(self, text):
-        text_list = text.split()
-        name = text_list[-7]
-        name_clean = re.sub(r"\^[0-9]", "", name).lower()
-        time_list = re.findall("[0-9]+", text_list[-1])
-        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
-        data = self.get_data_file("times.json")
-        pb = int(data['scores'][-1]['score'])
-        for score in data['scores']:
-            if name_clean == str(score['name']).lower():
-                pb = int(score['score'])
-        if time < pb:
-            rank = self.get_rank_from_time(data, time)
-            if rank == 1:
-                self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
-            else:
-                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
-
     def handle_bot_connect(self):
         self.write_data()
         self.write_data_qlstats()
@@ -396,3 +254,148 @@ class race(minqlbot.Plugin):
     def cmd_update(self, player, msg, channel):
         self.write_data()
         self.write_data_qlstats()
+
+    def write_data(self):
+        data = race.get_data_online(self.game().short_map)
+        with open('times.json', 'w') as outfile:
+            json.dump(data, outfile)
+            self.debug("wrote times.json")
+
+    def write_data_qlstats(self):
+        data = race.get_data_online_qlstats("maps/" + self.game().short_map + "?ruleset=pql&weapons=off")
+        with open('times_strafe.json', 'w') as outfile:
+            json.dump(data, outfile)
+            self.debug("wrote times_strafe.json")
+
+    def get_data(self, map):
+        if map == self.game().short_map:
+            return race.get_data_file("times.json")
+        return race.get_data_online(map)
+
+    def get_data_qlstats(self, query):
+        if "maps/" in query:
+            map = query.replace("maps/", "").replace("?ruleset=pql&weapons=off", "")
+            if map == self.game().short_map:
+                return self.get_data_file("times_strafe.json")
+        return race.get_data_online_qlstats(query)
+
+    @staticmethod
+    def get_data_online(map):
+        base_url = "http://quakelive.com/race/map/"
+        url = base_url + map
+        request = urllib.request.Request(url,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
+        response = urllib.request.urlopen(request)
+        return json.loads(response.read().decode("utf-8"))
+
+    @staticmethod
+    def get_data_online_qlstats(query):
+        base_url = "http://ql.leeto.fi/api/race/"
+        url = base_url + query
+        request = urllib.request.Request(url,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"})
+        response = urllib.request.urlopen(request)
+        j = json.loads(response.read().decode("utf-8"))
+        data = j['data']
+        for score in data['scores']:
+            score['name'] = score.pop('PLAYER')
+            score['score'] = score.pop('SCORE')
+        return data
+
+    @staticmethod
+    def get_data_file(file):
+        with open(file) as json_file:
+            return json.load(json_file)
+
+    @staticmethod
+    def fix_time(time):
+        time = str(time)
+        if len(time) < 4:
+            return "0." + time[-3:]
+        return time[:-3] + "." + time[-3:]
+
+    def get_map(self, msg):
+        if len(msg) == 2:
+            return msg[1].lower()
+        else:
+            return self.game().short_map
+
+    @staticmethod
+    def say_time(name, rank, last, time, first_time, map, strafe, channel):
+        if rank != 1:
+            time_diff = str(int(time) - int(first_time))
+            time_diff = time_diff.zfill(3)
+            time_diff_s = "^8[^1+" + race.fix_time(str(time_diff)) + "^8]"
+        else:
+            time_diff_s = ""
+
+        time_s = race.fix_time(time)
+        strafe_s = "^2(strafe)" if strafe else ""
+
+        channel.reply(
+            "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
+                                                                              map, strafe_s))
+
+    @staticmethod
+    def get_rank(data, rank):
+        score = data['scores'][rank - 1]
+        name = score['name']
+        time = str(score['score'])
+        first_time = str(data['scores'][0]['score'])
+        return name, time, first_time
+
+    @staticmethod
+    def get_pb(data, player):
+        for i, score in enumerate(data['scores']):
+            if player.lower() == str(score['name']).lower():
+                time = score['score']
+                rank = i + 1
+                first_time = data['scores'][0]['score']
+                return rank, time, first_time
+        return -1, -1, -1
+
+    @staticmethod
+    def get_rank_from_time(data, time):
+        for i, score in enumerate(data['scores']):
+            if time < int(score['score']):
+                return i + 1
+        return -1
+
+    def get_average(self, player, msg, strafe):
+        if len(msg) == 1:
+            name = player.clean_name
+        else:
+            name = msg[1]
+
+        strafe_s = "off" if strafe else "on"
+        data = self.get_data_qlstats("players/" + name + "?ruleset=pql&weapons=" + strafe_s)
+
+        if len(data['scores']) == 0:
+            return name, 0
+
+        total_rank = 0
+        total_maps = 0
+        for score in data['scores']:
+            # don't include removed maps
+            if score['MAP'] != "bloodlust" and score['MAP'] != "doubleimpact" and score['MAP'] != "eviscerated":
+                total_rank += score['RANK']
+                total_maps += 1
+        return name, total_rank / total_maps
+
+    def check_pb(self, text):
+        text_list = text.split()
+        name = text_list[-7]
+        name_clean = re.sub(r"\^[0-9]", "", name).lower()
+        time_list = re.findall("[0-9]+", text_list[-1])
+        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
+        data = self.get_data_file("times.json")
+        pb = int(data['scores'][-1]['score'])
+        for score in data['scores']:
+            if name_clean == str(score['name']).lower():
+                pb = int(score['score'])
+        if time < pb:
+            rank = self.get_rank_from_time(data, time)
+            if rank == 1:
+                self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
+            else:
+                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))

@@ -95,7 +95,7 @@ class race(minqlbot.Plugin):
 
     def cmd_time(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: ^3!time player <map>")
+            channel.reply("usage: ^3!time player [map]")
             return
         elif len(msg) == 2:
             name = msg[1]
@@ -121,7 +121,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: ^3!ranktime time <map>")
+            channel.reply("usage: ^3!ranktime time [map]")
             return
 
         data = self.get_data(map)
@@ -187,7 +187,7 @@ class race(minqlbot.Plugin):
 
     def cmd_stime(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: ^3!stime player <map>")
+            channel.reply("usage: ^3!stime player [map]")
             return
         elif len(msg) == 2:
             name = msg[1]
@@ -213,7 +213,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: ^3!sranktime time <map>")
+            channel.reply("usage: ^3!sranktime time [map]")
             return
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")

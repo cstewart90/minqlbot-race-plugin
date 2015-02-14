@@ -16,6 +16,9 @@ s in front of a command means strafe. Optional arguments are surrounded by squar
 **!(s)top [map]**
 >Show top 3 times for the the map.
 
+**!(s)top [map]**
+>Shows the times of everyone in the server on that map.
+
 **!(s)pb [map]**
 >Show your personal best for the map.
 
@@ -32,4 +35,10 @@ s in front of a command means strafe. Optional arguments are surrounded by squar
 >Show players average rank using ql.leeto.fi.
 
 **!top100 [map]**
->Show topp 100 time for the map.
+>Show top 100 time for the map.
+
+**!random**
+>Callvotes a random map
+
+**!update**
+>Update times for current map

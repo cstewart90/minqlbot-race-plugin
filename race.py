@@ -11,6 +11,7 @@ class race(minqlbot.Plugin):
         self.add_hook("map", self.handle_map)
         self.add_hook("console", self.handle_console)
         self.add_command(("top", "top3"), self.cmd_top)
+        self.add_command("all", self.cmd_all)
         self.add_command("rank", self.cmd_rank)
         self.add_command(("pb", "me"), self.cmd_pb)
         self.add_command("top100", self.cmd_top100)
@@ -18,6 +19,7 @@ class race(minqlbot.Plugin):
         self.add_command("ranktime", self.cmd_ranktime)
         self.add_command("avg", self.cmd_avg)
         self.add_command(("stop", "stop3"), self.cmd_stop)
+        self.add_command("sall", self.cmd_sall)
         self.add_command("srank", self.cmd_srank)
         self.add_command(("spb", "sme"), self.cmd_spb)
         self.add_command("stime", self.cmd_stime)
@@ -53,6 +55,22 @@ class race(minqlbot.Plugin):
             ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
         channel.reply("^2{}: {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
+
+    def cmd_all(self, player, msg, channel):
+        map = self.get_map(msg)
+        data = self.get_data(map)
+
+        times = []
+        for p in self.players():
+            rank, time, first_time = race.get_pb(data, p.clean_name)
+            if rank != -1:
+                times.append("^3{}. ^7{} ^2{}".format(rank, p, race.fix_time(time)))
+
+        if len(times) == 0:
+            channel.reply("No times were found for anyone in top 100 :(")
+        else:
+            times.sort(key=natural_keys)
+            channel.reply(' '.join(times))
 
     def cmd_rank(self, player, msg, channel):
         if len(msg) == 1:
@@ -153,6 +171,22 @@ class race(minqlbot.Plugin):
             ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
         channel.reply("^2{}(strafe): {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
+
+    def cmd_sall(self, player, msg, channel):
+        map = self.get_map(msg)
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+
+        times = []
+        for p in self.players():
+            rank, time, first_time = race.get_pb(data, p.clean_name)
+            if rank != -1:
+                times.append("^3{}. ^7{} ^2{}".format(rank, p, race.fix_time(time)))
+
+        if len(times) == 0:
+            channel.reply("No times were found for anyone on ql.leeto.fi :(")
+        else:
+            times.sort(key=natural_keys)
+            channel.reply(' '.join(times))
 
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)
@@ -399,3 +433,15 @@ class race(minqlbot.Plugin):
                 self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
             else:
                 self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
+
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+
+def natural_keys(text):
+    """
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    """
+    return [atoi(c) for c in re.split('(\d+)', text)]

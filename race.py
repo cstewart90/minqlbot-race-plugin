@@ -280,10 +280,10 @@ class race(minqlbot.Plugin):
         self.send_command("cv map {}".format(random.choice(maps)))
 
     def cmd_help(self, player, msg, channel):
-        channel.reply("Go to ^6tinyurl.com/qlracebot ^2also do ^3!commands ^2for a list of commands")
+        channel.reply("Go to ^6tinyurl.com/qlracebot ^3!commands ^2for a list of commands")
 
     def cmd_commands(self, player, msg, channel):
-        channel.reply("Commands: ^3!(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
+        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
 
     def cmd_update(self, player, msg, channel):
         self.write_data()

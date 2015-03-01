@@ -423,10 +423,13 @@ class race(minqlbot.Plugin):
         time_list = re.findall("[0-9]+", text_list[-1])
         time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
         data = self.get_data_file("times.json")
-        pb = int(data['scores'][-1]['score'])
         for score in data['scores']:
             if name_clean == str(score['name']).lower():
                 pb = int(score['score'])
+                break
+        else:
+            pb = int(data['scores'][-1]['score'])
+
         if time < pb:
             rank = self.get_rank_from_time(data, time)
             if rank == 1:

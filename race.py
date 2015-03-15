@@ -101,7 +101,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(player, rank, last, time, first_time, map, False, channel)
         else:
-            channel.reply("no time found for ^7{} ^2in top 100".format(player))
+            channel.reply("No time found for ^7{} ^2in top 100".format(player))
 
     def cmd_top100(self, player, msg, channel):
         map = self.get_map(msg)
@@ -129,7 +129,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(name, rank, last, time, first_time, map, False, channel)
         else:
-            channel.reply("no time found for ^7{} ^2in top 100".format(name))
+            channel.reply("No time found for ^7{} ^2in top 100".format(name))
 
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:
@@ -139,7 +139,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: ^3!ranktime time [map]")
+            channel.reply("Usage: ^3!ranktime time [map]")
             return
 
         data = self.get_data(map)
@@ -157,7 +157,7 @@ class race(minqlbot.Plugin):
         if average_rank == 0:
             channel.reply("^7{} ^2has no records on ql.leeto.fi".format(name))
         else:
-            channel.reply("^7{} ^2average rank is ^3{:.2f}".format(name, average_rank))
+            channel.reply("^7{} ^2average rank is ^3{:.2f} ^2on ql.leeto.fi".format(name, average_rank))
 
     def cmd_stop(self, player, msg, channel):
         map = self.get_map(msg)
@@ -183,7 +183,7 @@ class race(minqlbot.Plugin):
                 times.append("^3{}. ^7{} ^2{}".format(rank, p, race.fix_time(time)))
 
         if len(times) == 0:
-            channel.reply("No times were found for anyone on ql.leeto.fi :(")
+            channel.reply("No strafe times were found for anyone on ql.leeto.fi :(")
         else:
             times.sort(key=natural_keys)
             channel.reply(' '.join(times))
@@ -196,7 +196,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(player, rank, last, time, first_time, map, True, channel)
         else:
-            channel.reply("No time was found for ^7{}".format(player))
+            channel.reply("No strafe time was found for ^7{}".format(player))
 
     def cmd_srank(self, player, msg, channel):
         if len(msg) == 1:
@@ -237,7 +237,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             race.say_time(name, rank, last, time, first_time, map, True, channel)
         else:
-            channel.reply("No time was found for ^7{}".format(name))
+            channel.reply("No strafe time was found for ^7{}".format(name))
 
     def cmd_sranktime(self, player, msg, channel):
         if len(msg) == 2:
@@ -247,7 +247,7 @@ class race(minqlbot.Plugin):
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
-            channel.reply("usage: ^3!sranktime time [map]")
+            channel.reply("Usage: ^3!sranktime time [map]")
             return
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
@@ -256,14 +256,14 @@ class race(minqlbot.Plugin):
         last = len(data['scores'])
 
         if rank != -1:
-            channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, rank, last, map))
+            channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}^2(STRAFE)".format(time_s, rank, last, map))
         else:
-            channel.reply("^3{} ^2would be rank ^3{}".format(time_s, last+1))
+            channel.reply("^3{} ^2would be rank ^3{}^2(STRAFE)".format(time_s, last+1))
 
     def cmd_savg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, True)
         if average_rank == 0:
-            channel.reply("^7{} ^2has no records on ql.leeto.fi".format(name))
+            channel.reply("^7{} ^2has no strafe records on ql.leeto.fi".format(name))
         else:
             channel.reply("^7{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
 

@@ -75,11 +75,11 @@ class race(minqlbot.Plugin):
     def cmd_rank(self, player, msg, channel):
         if len(msg) == 1:
             rank = 1
-            map = self.game().short_map
+            map = self.game().short_map.lower()
         elif len(msg) == 2:
             if msg[1].isdigit():
                 rank = int(msg[1])
-                map = self.game().short_map
+                map = self.game().short_map.lower()
             else:
                 rank = 1
                 map = msg[1].lower()
@@ -117,7 +117,7 @@ class race(minqlbot.Plugin):
             return
         elif len(msg) == 2:
             name = msg[1]
-            map = self.game().short_map
+            map = self.game().short_map.lower()
         else:
             name = msg[1]
             map = msg[2].lower()
@@ -134,7 +134,7 @@ class race(minqlbot.Plugin):
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:
             time = int(float(msg[1])*1000)
-            map = self.game().short_map
+            map = self.game().short_map.lower()
         elif len(msg) == 3:
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
@@ -201,11 +201,11 @@ class race(minqlbot.Plugin):
     def cmd_srank(self, player, msg, channel):
         if len(msg) == 1:
             rank = 1
-            map = self.game().short_map
+            map = self.game().short_map.lower()
         elif len(msg) == 2:
             if msg[1].isdigit():
                 rank = int(msg[1])
-                map = self.game().short_map
+                map = self.game().short_map.lower()
             else:
                 rank = 1
                 map = msg[1].lower()
@@ -225,7 +225,7 @@ class race(minqlbot.Plugin):
             return
         elif len(msg) == 2:
             name = msg[1]
-            map = self.game().short_map
+            map = self.game().short_map.lower()
         else:
             name = msg[1]
             map = msg[2].lower()
@@ -242,7 +242,7 @@ class race(minqlbot.Plugin):
     def cmd_sranktime(self, player, msg, channel):
         if len(msg) == 2:
             time = int(float(msg[1])*1000)
-            map = self.game().short_map
+            map = self.game().short_map.lower()
         elif len(msg) == 3:
             time = int(float(msg[1])*1000)
             map = msg[2].lower()
@@ -290,26 +290,26 @@ class race(minqlbot.Plugin):
         self.write_data_qlstats()
 
     def write_data(self):
-        data = race.get_data_online(self.game().short_map)
+        data = race.get_data_online(self.game().short_map.lower())
         with open('times.json', 'w') as outfile:
             json.dump(data, outfile)
             self.debug("wrote times.json")
 
     def write_data_qlstats(self):
-        data = race.get_data_online_qlstats("maps/" + self.game().short_map + "?ruleset=pql&weapons=off")
+        data = race.get_data_online_qlstats("maps/" + self.game().short_map.lower() + "?ruleset=pql&weapons=off")
         with open('times_strafe.json', 'w') as outfile:
             json.dump(data, outfile)
             self.debug("wrote times_strafe.json")
 
     def get_data(self, map):
-        if map == self.game().short_map:
+        if map == self.game().short_map.lower():
             return race.get_data_file("times.json")
         return race.get_data_online(map)
 
     def get_data_qlstats(self, query):
         if "maps/" in query:
             map = query.replace("maps/", "").replace("?ruleset=pql&weapons=off", "")
-            if map == self.game().short_map:
+            if map == self.game().short_map.lower():
                 return self.get_data_file("times_strafe.json")
         return race.get_data_online_qlstats(query)
 
@@ -352,7 +352,7 @@ class race(minqlbot.Plugin):
         if len(msg) == 2:
             return msg[1].lower()
         else:
-            return self.game().short_map
+            return self.game().short_map.lower()
 
     @staticmethod
     def say_time(name, rank, last, time, first_time, map, strafe, channel):

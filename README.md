@@ -5,34 +5,34 @@ Race plugin for [minqlbot](https://github.com/MinoMino/minqlbot)
 Follow the instruction on https://github.com/MinoMino/minqlbot to run the bot. Place race.py in python/plugins folder. Edit config.cfg and add race to plugins list.
 
 # Commands
-s in front of a command means strafe. Optional arguments are surrounded by square brackets.
+s in front of a command means strafe. Optional arguments are surrounded by square brackets. For most commands if no map is given it will use current map.
 
 **!commands**
 >Show all the commands.
 
-**!(s)top [map]**
->Show top 3 times for the the map.
+**!(s)top [amount] [map]**
+>Show top x amount of times for a map. Default amount if none is given is 3.
 
-**!(s)top [map]**
->Shows the times of everyone in the server on that map.
+**!(s)all [map]**
+>Shows the times of everyone in the server on a map.
 
 **!(s)pb [map]**
->Show your personal best for the map.
+>Show your personal best for a map.
 
 **!(s)rank [rank] [map]**
->Show the x rank time for the map. If no rank is given it uses 1.
+>Show the x rank time for a map. Default rank if none is given is 1.
 
 **!(s)time player [map]**
->Show that players time for the map.
+>Show that players time for a map.
 
 **!(s)ranktime time [map]**
->Show what rank the given time would be.
+>Show what rank the given time would be on a map.
 
 **!(s)avg [player]**
 >Show players average rank using ql.leeto.fi.
 
 **!top100 [map]**
->Show top 100 time for the map.
+>Show top 100 time for a map.
 
 **!random**
 >Callvotes a random map

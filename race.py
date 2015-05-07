@@ -61,17 +61,33 @@ class race(minqlbot.Plugin):
                 self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
 
     def cmd_top(self, player, msg, channel):
-        map = self.get_map(msg)
-        data = self.get_data(map)
+        if len(msg) == 1:
+            amount = 3
+            map = self.game().short_map.lower()
+        elif len(msg) == 2:
+            if msg[1].isdigit():
+                amount = int(msg[1])
+                map = self.game().short_map.lower()
+            else:
+                amount = 3
+                map = msg[1].lower()
+        else:
+            amount = int(msg[1])
+            map = msg[2]
 
+        if amount > 30:
+            channel.reply("Please use value <=30")
+            return
+
+        data = self.get_data(map)
         ranks = []
-        for i in range(3):
+        for i in range(amount):
             score = data['scores'][i]
             name = score['name']
             time = race.fix_time(score['score'])
             ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
-        channel.reply("^2{}: {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
+        channel.reply("^2{}: {}".format(map, " ".join(ranks)))
 
     def cmd_all(self, player, msg, channel):
         map = self.get_map(msg)
@@ -177,17 +193,33 @@ class race(minqlbot.Plugin):
             channel.reply("^7{} ^2average rank is ^3{:.2f} ^2on ql.leeto.fi".format(name, average_rank))
 
     def cmd_stop(self, player, msg, channel):
-        map = self.get_map(msg)
-        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+        if len(msg) == 1:
+            amount = 3
+            map = self.game().short_map.lower()
+        elif len(msg) == 2:
+            if msg[1].isdigit():
+                amount = int(msg[1])
+                map = self.game().short_map.lower()
+            else:
+                amount = 3
+                map = msg[1].lower()
+        else:
+            amount = int(msg[1])
+            map = msg[2]
 
+        if amount > 30:
+            channel.reply("Please use value <=30")
+            return
+
+        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         ranks = []
-        for i in range(3):
+        for i in range(amount):
             score = data['scores'][i]
             name = score['name']
             time = race.fix_time(str(score['score']))
             ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
-        channel.reply("^2{}(strafe): {} {} {}".format(map, ranks[0], ranks[1], ranks[2]))
+        channel.reply("^2{}(strafe): {}".format(map, " ".join(ranks)))
 
     def cmd_sall(self, player, msg, channel):
         map = self.get_map(msg)

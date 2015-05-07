@@ -38,9 +38,27 @@ class race(minqlbot.Plugin):
         self.write_data_qlstats()
 
     def handle_console(self, text):
-        if "finished the race in in" in text:
-            self.check_pb(text)
+        if "finished the race in in" not in text:
             return
+        text_list = text.split()
+        name = text_list[-7]
+        name_clean = re.sub(r"\^[0-9]", "", name).lower()
+        time_list = re.findall("[0-9]+", text_list[-1])
+        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
+        data = self.get_data_file("times.json")
+        for score in data['scores']:
+            if name_clean == str(score['name']).lower():
+                pb = int(score['score'])
+                break
+        else:
+            pb = int(data['scores'][-1]['score'])
+
+        if time < pb:
+            rank = self.get_rank_from_time(data, time)
+            if rank == 1:
+                self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
+            else:
+                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
 
     def cmd_top(self, player, msg, channel):
         map = self.get_map(msg)
@@ -411,27 +429,6 @@ class race(minqlbot.Plugin):
                 total_rank += score['RANK']
                 total_maps += 1
         return name, total_rank / total_maps
-
-    def check_pb(self, text):
-        text_list = text.split()
-        name = text_list[-7]
-        name_clean = re.sub(r"\^[0-9]", "", name).lower()
-        time_list = re.findall("[0-9]+", text_list[-1])
-        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
-        data = self.get_data_file("times.json")
-        for score in data['scores']:
-            if name_clean == str(score['name']).lower():
-                pb = int(score['score'])
-                break
-        else:
-            pb = int(data['scores'][-1]['score'])
-
-        if time < pb:
-            rank = self.get_rank_from_time(data, time)
-            if rank == 1:
-                self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
-            else:
-                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
 
 
 def atoi(text):

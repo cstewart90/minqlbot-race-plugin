@@ -26,7 +26,6 @@ class race(minqlbot.Plugin):
         self.add_command("sranktime", self.cmd_sranktime)
         self.add_command("savg", self.cmd_savg)
         self.add_command("random", self.cmd_random)
-        self.add_command("help", self.cmd_help)
         self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
 
@@ -278,9 +277,6 @@ class race(minqlbot.Plugin):
                 "spidercrossings", "stonekeep", "stronghold", "theatreofpain", "theedge", "trinity", "troubledwaters",
                 "warehouse"]
         self.send_command("cv map {}".format(random.choice(maps)))
-
-    def cmd_help(self, player, msg, channel):
-        channel.reply("Go to ^6tinyurl.com/qlracebot ^3!commands ^2for a list of commands")
 
     def cmd_commands(self, player, msg, channel):
         channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")

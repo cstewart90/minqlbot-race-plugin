@@ -2,16 +2,13 @@
 Race plugin for [minqlbot](https://github.com/MinoMino/minqlbot)
 
 ## Installation
-Follow the instruction on https://github.com/MinoMino/minqlbot to run the bot. Place race.py in python/plugins folder. Edit config.cfg and add race to Plugins:.
+Follow the instruction on https://github.com/MinoMino/minqlbot to run the bot. Place race.py in python/plugins folder. Edit config.cfg and add race to plugins list.
 
 # Commands
 s in front of a command means strafe. Optional arguments are surrounded by square brackets.
 
 **!commands**
 >Show all the commands.
-
-**!help**
->Show a link to this page.
 
 **!(s)top [map]**
 >Show top 3 times for the the map.

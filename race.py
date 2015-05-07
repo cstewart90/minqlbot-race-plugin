@@ -457,7 +457,7 @@ class race(minqlbot.Plugin):
         total_maps = 0
         for score in data['scores']:
             # don't include removed maps
-            if score['MAP'] != "bloodlust" and score['MAP'] != "doubleimpact" and score['MAP'] != "eviscerated":
+            if score['MAP'] != "bloodlust" and score['MAP'] != "doubleimpact" and score['MAP'] != "eviscerated" and score['MAP'] != "industrialaccident":
                 total_rank += score['RANK']
                 total_maps += 1
         return name, total_rank / total_maps

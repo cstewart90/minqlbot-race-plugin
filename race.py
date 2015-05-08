@@ -304,7 +304,7 @@ class race(minqlbot.Plugin):
         if rank != -1:
             channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}(strafe)".format(time_s, rank, last, map))
         else:
-            channel.reply("^3{} ^2would be rank ^3{}(strafe)".format(time_s, last+1))
+            channel.reply("^3{} ^2would be rank ^3{} ^2on ^3{}(strafe)".format(time_s, last+1, map))
 
     def cmd_savg(self, player, msg, channel):
         name, average_rank = self.get_average(player, msg, True)

@@ -396,6 +396,8 @@ class race(minqlbot.Plugin):
             return "{}.{}".format(s, ms)
         time //= 1000
         m, s = divmod(time, 60)
+        if s < 10:
+            s = "0{}".format(s)
         return "{}:{}.{}".format(m, s, ms)
 
     def get_map(self, msg):

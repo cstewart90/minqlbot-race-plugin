@@ -103,7 +103,7 @@ class race(minqlbot.Plugin):
             channel.reply("No times were found for anyone in top 100 :(")
         else:
             times.sort(key=natural_keys)
-            channel.reply(" ".join(times))
+            channel.reply("{}: {}".format(map, " ".join(times)))
 
     def cmd_rank(self, player, msg, channel):
         if len(msg) == 1:
@@ -235,7 +235,7 @@ class race(minqlbot.Plugin):
             channel.reply("No strafe times were found for anyone on ql.leeto.fi :(")
         else:
             times.sort(key=natural_keys)
-            channel.reply(" ".join(times))
+            channel.reply("{}(strafe): {}".format(map, " ".join(times)))
 
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)
@@ -389,7 +389,7 @@ class race(minqlbot.Plugin):
 
     @staticmethod
     def time_string(time):
-        ms = time[-3:]
+        ms = str(time)[-3:]
         time = int(time)
         s = time//1000
         if s < 60:

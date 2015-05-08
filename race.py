@@ -25,7 +25,6 @@ class race(minqlbot.Plugin):
         self.add_command("stime", self.cmd_stime)
         self.add_command("sranktime", self.cmd_sranktime)
         self.add_command("savg", self.cmd_savg)
-        self.add_command("random", self.cmd_random)
         self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
 
@@ -313,18 +312,6 @@ class race(minqlbot.Plugin):
             channel.reply("^7{} ^2has no strafe records on ql.leeto.fi".format(name))
         else:
             channel.reply("^7{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
-
-    def cmd_random(self, player, msg, channel):
-        maps = ["arkinholm", "basesiege", "beyondreality", "blackcathedral", "brimstoneabbey", "campercrossings",
-                "campgrounds", "citycrossings", "courtyard", "deepinside", "distantscreams", "divineintermission",
-                "duelingkeeps", "falloutbunker", "finnegans", "fluorescent", "foolishlegacy", "futurecrossings",
-                "gospelcrossings", "henhouse", "industrialaccident", "industrialrevolution", "infinity",
-                "innersanctums", "ironworks", "japanesecastles", "jumpwerkz", "newcerberon", "overlord",
-                "pillbox", "qzpractice1", "qzpractice2", "ragnarok", "railyard", "rebound", "reflux", "repent",
-                "scornforge", "shakennotstirred", "shiningforces", "siberia", "skyward", "spacechamber", "spacectf",
-                "spidercrossings", "stonekeep", "stronghold", "theatreofpain", "theedge", "trinity", "troubledwaters",
-                "warehouse"]
-        self.send_command("cv map {}".format(random.choice(maps)))
 
     def cmd_commands(self, player, msg, channel):
         channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")

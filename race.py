@@ -43,8 +43,8 @@ class race(minqlbot.Plugin):
         text_list = text.split()
         name = text_list[-7]
         name_clean = re.sub(r"\^[0-9]", "", name).lower()
-        time_list = re.findall("[0-9]+", text_list[-1])
-        time = int(time_list[0]) * 60000 + int(time_list[1]) * 1000 + int(time_list[2])
+        time_s = text_list[-1]
+        time = race.ms(time_s)
         data = self.get_data_file("times.json")
         for score in data["scores"]:
             if name_clean == str(score["name"]).lower():
@@ -166,15 +166,14 @@ class race(minqlbot.Plugin):
 
     def cmd_ranktime(self, player, msg, channel):
         if len(msg) == 2:
-            time = int(float(msg[1])*1000)
             map = self.game().short_map.lower()
         elif len(msg) == 3:
-            time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
             channel.reply("Usage: ^3!ranktime time [map]")
             return
 
+        time = race.ms(msg[1])
         data = self.get_data(map)
         time_s = race.time_string(str(time))
         rank = self.get_rank_from_time(data, time)
@@ -290,15 +289,14 @@ class race(minqlbot.Plugin):
 
     def cmd_sranktime(self, player, msg, channel):
         if len(msg) == 2:
-            time = int(float(msg[1])*1000)
             map = self.game().short_map.lower()
         elif len(msg) == 3:
-            time = int(float(msg[1])*1000)
             map = msg[2].lower()
         else:
             channel.reply("Usage: ^3!sranktime time [map]")
             return
 
+        time = race.ms(msg[1])
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         rank = self.get_rank_from_time(data, time)
         time_s = race.time_string(str(time))
@@ -399,6 +397,11 @@ class race(minqlbot.Plugin):
         if s < 10:
             s = "0{}".format(s)
         return "{}:{}.{}".format(m, s, ms)
+
+    @staticmethod
+    def ms(time_string):
+        minutes, seconds = (["0"] + time_string.split(":"))[-2:]
+        return int(60000 * int(minutes) + 1000 * float(seconds))
 
     def get_map(self, msg):
         if len(msg) == 2:

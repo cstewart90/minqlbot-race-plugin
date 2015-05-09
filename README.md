@@ -34,8 +34,5 @@ s in front of a command means strafe. Optional arguments are surrounded by squar
 **!top100 [map]**
 >Show top 100 time for a map.
 
-**!random**
->Callvotes a random map
-
 **!update**
 >Update times for current map

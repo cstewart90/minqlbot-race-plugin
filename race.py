@@ -52,11 +52,11 @@ class race(minqlbot.Plugin):
             pb = int(data["scores"][-1]["score"])
 
         if time < pb:
-            rank = race.get_rank_from_time(data, time)
+            rank, time_diff = race.get_rank_from_time(data, time)
             if rank == 1:
-                self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
+                self.send_command("say ^7{} ^2just broke the ^3world record! {}".format(name, time_diff))
             else:
-                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2!".format(name, rank))
+                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2 {}".format(name, rank, time_diff))
 
     def cmd_top(self, player, msg, channel):
         if len(msg) == 1:
@@ -174,7 +174,7 @@ class race(minqlbot.Plugin):
         time = race.ms(msg[1])
         data = self.get_data(map)
         time_s = race.time_string(str(time))
-        rank = race.get_rank_from_time(data, time)
+        rank, _ = race.get_rank_from_time(data, time)
         last = len(data["scores"])
 
         if rank != -1:
@@ -296,7 +296,7 @@ class race(minqlbot.Plugin):
 
         time = race.ms(msg[1])
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-        rank = race.get_rank_from_time(data, time)
+        rank, _ = race.get_rank_from_time(data, time)
         time_s = race.time_string(str(time))
         last = len(data["scores"])
 
@@ -373,9 +373,9 @@ class race(minqlbot.Plugin):
 
     @staticmethod
     def time_string(time):
-        ms = str(time)[-3:]
         time = int(time)
-        s = time//1000
+        s, ms = divmod(time, 1000)
+        ms = str(ms).zfill(3)
         if s < 60:
             return "{}.{}".format(s, ms)
         time //= 1000
@@ -431,10 +431,18 @@ class race(minqlbot.Plugin):
 
     @staticmethod
     def get_rank_from_time(data, time):
+        first_time = str(data["scores"][0]["score"])
+        time_diff = str(abs(int(time) - int(first_time)))
+        time_diff = time_diff.zfill(3)
+        rank = -1
         for i, score in enumerate(data["scores"]):
             if time < int(score["score"]):
-                return i + 1
-        return -1
+                rank = i + 1
+                break
+        if rank == 1:
+            return rank, "^8[^2-" + race.time_string(time_diff) + "^8]"
+        else:
+            return rank, "^8[^1+" + race.time_string(time_diff) + "^8]"
 
     def get_average(self, player, msg, strafe):
         if len(msg) == 1:

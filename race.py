@@ -387,7 +387,7 @@ class race(minqlbot.Plugin):
     @staticmethod
     def ms(time_string):
         minutes, seconds = (["0"] + time_string.split(":"))[-2:]
-        return int(60000 * int(minutes) + 1000 * float(seconds))
+        return int(60000 * int(minutes) + round(1000 * float(seconds)))
 
     def get_map(self, msg):
         if len(msg) == 2:

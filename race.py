@@ -43,7 +43,7 @@ class race(minqlbot.Plugin):
         name_clean = re.sub(r"\^[0-9]", "", name).lower()
         time_s = text_list[-1]
         time = race.ms(time_s)
-        data = self.get_data_file("times.json")
+        data = race.get_data_file("times.json")
         for score in data["scores"]:
             if name_clean == str(score["name"]).lower():
                 pb = int(score["score"])
@@ -52,7 +52,7 @@ class race(minqlbot.Plugin):
             pb = int(data["scores"][-1]["score"])
 
         if time < pb:
-            rank = self.get_rank_from_time(data, time)
+            rank = race.get_rank_from_time(data, time)
             if rank == 1:
                 self.send_command("say ^7{} ^2just broke the ^3world record!".format(name))
             else:
@@ -119,7 +119,7 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data(map)
-        name, time, first_time = self.get_rank(data, rank)
+        name, time, first_time = race.get_rank(data, rank)
         last = len(data["scores"])
 
         race.say_time(name, rank, last, time, first_time, map, False, channel)
@@ -127,7 +127,7 @@ class race(minqlbot.Plugin):
     def cmd_pb(self, player, msg, channel):
         map = self.get_map(msg)
         data = self.get_data(map)
-        rank, time, first_time = self.get_pb(data, player.clean_name)
+        rank, time, first_time = race.get_pb(data, player.clean_name)
         last = len(data["scores"])
         if rank != -1:
             race.say_time(player, rank, last, time, first_time, map, False, channel)
@@ -138,7 +138,7 @@ class race(minqlbot.Plugin):
         map = self.get_map(msg)
         data = self.get_data(map)
         last = len(data["scores"])
-        name, time, first_time = self.get_rank(data, last)
+        name, time, first_time = race.get_rank(data, last)
 
         race.say_time(name, last, last, time, first_time, map, False, channel)
 
@@ -154,7 +154,7 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data(map)
-        rank, time, first_time = self.get_pb(data, name)
+        rank, time, first_time = race.get_pb(data, name)
         last = len(data["scores"])
 
         if rank != -1:
@@ -174,7 +174,7 @@ class race(minqlbot.Plugin):
         time = race.ms(msg[1])
         data = self.get_data(map)
         time_s = race.time_string(str(time))
-        rank = self.get_rank_from_time(data, time)
+        rank = race.get_rank_from_time(data, time)
         last = len(data["scores"])
 
         if rank != -1:
@@ -237,7 +237,7 @@ class race(minqlbot.Plugin):
     def cmd_spb(self, player, msg, channel):
         map = self.get_map(msg)
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-        rank, time, first_time = self.get_pb(data, player.clean_name)
+        rank, time, first_time = race.get_pb(data, player.clean_name)
         last = len(data["scores"])
         if rank != -1:
             race.say_time(player, rank, last, time, first_time, map, True, channel)
@@ -260,7 +260,7 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-        name, time, first_time = self.get_rank(data, rank)
+        name, time, first_time = race.get_rank(data, rank)
         last = len(data["scores"])
 
         race.say_time(name, rank, last, time, first_time, map, True, channel)
@@ -277,7 +277,7 @@ class race(minqlbot.Plugin):
             map = msg[2].lower()
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-        rank, time, first_time = self.get_pb(data, name)
+        rank, time, first_time = race.get_pb(data, name)
         last = len(data["scores"])
 
         if rank != -1:
@@ -296,7 +296,7 @@ class race(minqlbot.Plugin):
 
         time = race.ms(msg[1])
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-        rank = self.get_rank_from_time(data, time)
+        rank = race.get_rank_from_time(data, time)
         time_s = race.time_string(str(time))
         last = len(data["scores"])
 
@@ -340,7 +340,7 @@ class race(minqlbot.Plugin):
         if "maps/" in query:
             map = query.replace("maps/", "").replace("?ruleset=pql&weapons=off", "")
             if map == self.game().short_map.lower():
-                return self.get_data_file("times_strafe.json")
+                return race.get_data_file("times_strafe.json")
         return race.get_data_online_qlstats(query)
 
     @staticmethod

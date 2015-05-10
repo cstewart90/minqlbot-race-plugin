@@ -56,7 +56,7 @@ class race(minqlbot.Plugin):
             if rank == 1:
                 self.send_command("say ^7{} ^2just broke the ^3world record! {}".format(name, time_diff))
             else:
-                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{}^2 {}".format(name, rank, time_diff))
+                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{} {}".format(name, rank, time_diff))
 
     def cmd_top(self, player, msg, channel):
         if len(msg) == 1:

@@ -433,7 +433,6 @@ class race(minqlbot.Plugin):
     def get_rank_from_time(data, time):
         first_time = str(data["scores"][0]["score"])
         time_diff = str(abs(int(time) - int(first_time)))
-        time_diff = time_diff.zfill(3)
         rank = -1
         for i, score in enumerate(data["scores"]):
             if time < int(score["score"]):

@@ -183,11 +183,11 @@ class race(minqlbot.Plugin):
             channel.reply("^3{} ^2would not be in top ^3{}".format(time_s, last))
 
     def cmd_avg(self, player, msg, channel):
-        name, average_rank = self.get_average(player, msg, False)
+        name, average_rank, total_maps = self.get_average(player, msg, False)
         if average_rank == 0:
             channel.reply("^7{} ^2has no records on ql.leeto.fi".format(name))
         else:
-            channel.reply("^7{} ^2average rank is ^3{:.2f} ^2on ql.leeto.fi".format(name, average_rank))
+            channel.reply("^7{} ^2average rank is ^3{:.2f}^2({} maps) ^2on ql.leeto.fi".format(name, average_rank, total_maps))
 
     def cmd_stop(self, player, msg, channel):
         if len(msg) == 1:
@@ -306,11 +306,11 @@ class race(minqlbot.Plugin):
             channel.reply("^3{} ^2would be rank ^3{} ^2on ^3{}(strafe)".format(time_s, last+1, map))
 
     def cmd_savg(self, player, msg, channel):
-        name, average_rank = self.get_average(player, msg, True)
+        name, average_rank, total_maps = self.get_average(player, msg, True)
         if average_rank == 0:
             channel.reply("^7{} ^2has no strafe records on ql.leeto.fi".format(name))
         else:
-            channel.reply("^7{} ^2average strafe rank is ^3{:.2f}".format(name, average_rank))
+            channel.reply("^7{} ^2average strafe rank is ^3{:.2f}^2({} maps)".format(name, average_rank, total_maps))
 
     def cmd_commands(self, player, msg, channel):
         channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
@@ -462,7 +462,7 @@ class race(minqlbot.Plugin):
             if score["MAP"] != "bloodlust" and score["MAP"] != "doubleimpact" and score["MAP"] != "eviscerated" and score["MAP"] != "industrialaccident":
                 total_rank += score["RANK"]
                 total_maps += 1
-        return name, total_rank / total_maps
+        return name, total_rank / total_maps, total_maps
 
 
 def atoi(text):

@@ -41,7 +41,6 @@ class race(minqlbot.Plugin):
         self.write_data_qlstats()
 
     def handle_console(self, text):
-        self.debug(self.game().state)
         if self.game().state != "in_progress" or "finished the race in in" not in text:
             return
         text_list = text.split()

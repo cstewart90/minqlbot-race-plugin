@@ -178,7 +178,7 @@ class race(minqlbot.Plugin):
 
         time = race.ms(msg[1])
         data = self.get_data(map)
-        time_s = race.time_string(str(time))
+        time_s = race.time_string(time)
         rank, _ = race.get_rank_from_time(data, time)
         last = len(data["scores"])
 
@@ -218,7 +218,7 @@ class race(minqlbot.Plugin):
         for i in range(amount):
             score = data["scores"][i]
             name = score["name"]
-            time = race.time_string(str(score["score"]))
+            time = race.time_string(score["score"])
             ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
         channel.reply("^2{}(strafe): {}".format(map, " ".join(ranks)))
@@ -302,7 +302,7 @@ class race(minqlbot.Plugin):
         time = race.ms(msg[1])
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
         rank, _ = race.get_rank_from_time(data, time)
-        time_s = race.time_string(str(time))
+        time_s = race.time_string(time)
         last = len(data["scores"])
 
         if rank != -1:
@@ -405,7 +405,7 @@ class race(minqlbot.Plugin):
         if rank != 1:
             time_diff = str(int(time) - int(first_time))
             time_diff = time_diff.zfill(3)
-            time_diff_s = "^8[^1+" + race.time_string(str(time_diff)) + "^8]"
+            time_diff_s = "^8[^1+" + race.time_string(time_diff) + "^8]"
         else:
             time_diff_s = ""
 
@@ -420,8 +420,8 @@ class race(minqlbot.Plugin):
     def get_rank(data, rank):
         score = data["scores"][rank - 1]
         name = score["name"]
-        time = str(score["score"])
-        first_time = str(data["scores"][0]["score"])
+        time = score["score"]
+        first_time = data["scores"][0]["score"]
         return name, time, first_time
 
     @staticmethod
@@ -436,8 +436,8 @@ class race(minqlbot.Plugin):
 
     @staticmethod
     def get_rank_from_time(data, time):
-        first_time = str(data["scores"][0]["score"])
-        time_diff = str(abs(int(time) - int(first_time)))
+        first_time = data["scores"][0]["score"]
+        time_diff = abs(int(time) - int(first_time))
         rank = -1
         for i, score in enumerate(data["scores"]):
             if time < int(score["score"]):

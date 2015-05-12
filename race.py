@@ -6,7 +6,6 @@ import urllib.request
 
 class race(minqlbot.Plugin):
     def __init__(self):
-        self.add_hook("bot_connect", self.handle_bot_connect)
         self.add_hook("map", self.handle_map)
         self.add_hook("game_start", self.handle_game_start)
         self.add_hook("console", self.handle_console)
@@ -27,10 +26,6 @@ class race(minqlbot.Plugin):
         self.add_command("savg", self.cmd_savg)
         self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
-
-    def handle_bot_connect(self):
-        self.write_data()
-        self.write_data_qlstats()
 
     def handle_map(self, map):
         self.write_data()

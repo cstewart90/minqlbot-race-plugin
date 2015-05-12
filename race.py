@@ -385,8 +385,7 @@ class race(minqlbot.Plugin):
             return "{}.{}".format(s, ms)
         time //= 1000
         m, s = divmod(time, 60)
-        if s < 10:
-            s = "0{}".format(s)
+        s = str(s).zfill(2)
         return "{}:{}.{}".format(m, s, ms)
 
     @staticmethod

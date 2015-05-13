@@ -36,27 +36,28 @@ class race(minqlbot.Plugin):
         self.write_data_qlstats()
 
     def handle_console(self, text):
-        if self.game().state != "in_progress" or "finished the race in in" not in text:
+        if "finished the race in in" not in text:
             return
-        text_list = text.split()
-        name = text_list[-7]
-        name_clean = re.sub(r"\^[0-9]", "", name).lower()
-        time_s = text_list[-1]
-        time = race.ms(time_s)
-        data = race.get_data_file("times.json")
-        for score in data["scores"]:
-            if name_clean == str(score["name"]).lower():
-                pb = int(score["score"])
-                break
-        else:
-            pb = int(data["scores"][-1]["score"])
-
-        if time < pb:
-            rank, time_diff = race.get_rank_from_time(data, time)
-            if rank == 1:
-                self.send_command("say ^7{} ^2just broke the ^3world record! {}".format(name, time_diff))
+        if self.game().state != "in_progress":
+            text_list = text.split()
+            name = text_list[-7]
+            name_clean = re.sub(r"\^[0-9]", "", name).lower()
+            time_s = text_list[-1]
+            time = race.ms(time_s)
+            data = race.get_data_file("times.json")
+            for score in data["scores"]:
+                if name_clean == str(score["name"]).lower():
+                    pb = int(score["score"])
+                    break
             else:
-                self.send_command("say ^7{} ^2broke their PB and is now rank ^3{} {}".format(name, rank, time_diff))
+                pb = int(data["scores"][-1]["score"])
+
+            if time < pb:
+                rank, time_diff = race.get_rank_from_time(data, time)
+                if rank == 1:
+                    self.send_command("say ^7{} ^2just broke the ^3world record! {}".format(name, time_diff))
+                else:
+                    self.send_command("say ^7{} ^2broke their PB and is now rank ^3{} {}".format(name, rank, time_diff))
 
     def cmd_top(self, player, msg, channel):
         if len(msg) == 1:

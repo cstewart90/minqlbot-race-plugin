@@ -8,7 +8,7 @@ class race(minqlbot.Plugin):
     def __init__(self):
         super().__init__()
         self.add_hook("map", self.handle_map)
-        self.add_hook("game_start", self.handle_game_start)
+        self.add_hook("game_end", self.handle_game_end)
         self.add_hook("console", self.handle_console)
         self.add_command(("top", "top3"), self.cmd_top)
         self.add_command("all", self.cmd_all)
@@ -28,18 +28,19 @@ class race(minqlbot.Plugin):
         self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
 
+        self.end_game_timer = None
+
     def handle_map(self, map):
         self.write_data()
         self.write_data_qlstats()
 
-    def handle_game_start(self, game):
-        self.write_data()
-        self.write_data_qlstats()
+    def handle_game_end(self, game, score, winner):
+        self.end_game_timer = self.delay(5, self.write_data)
 
     def handle_console(self, text):
         if "finished the race in in" not in text:
             return
-        if self.game().state != "in_progress":
+        if self.game().state == "in_progress":
             text_list = text.split()
             name = text_list[-7]
             name_clean = re.sub(r"\^[0-9]", "", name).lower()

@@ -6,6 +6,7 @@ import urllib.request
 
 class race(minqlbot.Plugin):
     def __init__(self):
+        super().__init__()
         self.add_hook("map", self.handle_map)
         self.add_hook("game_start", self.handle_game_start)
         self.add_hook("console", self.handle_console)

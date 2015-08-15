@@ -10,22 +10,22 @@ class race(minqlbot.Plugin):
         self.add_hook("map", self.handle_map)
         self.add_hook("game_end", self.handle_game_end)
         self.add_hook("console", self.handle_console)
-        self.add_command(("top", "top3"), self.cmd_top)
-        self.add_command("all", self.cmd_all)
-        self.add_command("rank", self.cmd_rank)
-        self.add_command(("pb", "me"), self.cmd_pb)
-        self.add_command("top100", self.cmd_top100)
-        self.add_command("time", self.cmd_time)
-        self.add_command("ranktime", self.cmd_ranktime)
-        self.add_command("avg", self.cmd_avg)
-        self.add_command(("stop", "stop3"), self.cmd_stop)
-        self.add_command("sall", self.cmd_sall)
-        self.add_command("srank", self.cmd_srank)
-        self.add_command(("spb", "sme"), self.cmd_spb)
-        self.add_command("stime", self.cmd_stime)
-        self.add_command("sranktime", self.cmd_sranktime)
-        self.add_command("savg", self.cmd_savg)
-        self.add_command("commands", self.cmd_commands)
+        self.add_command(("top", "top3"), self.cmd_top, usage="[amount] [map]")
+        self.add_command("all", self.cmd_all, usage="[map]")
+        self.add_command("rank", self.cmd_rank, usage="[rank] [map]")
+        self.add_command(("pb", "me"), self.cmd_pb, usage="[map]")
+        self.add_command("top100", self.cmd_top100, usage="[map")
+        self.add_command("time", self.cmd_time, usage="<player> [map]")
+        self.add_command("ranktime", self.cmd_ranktime, usage="<time> [map]")
+        self.add_command("avg", self.cmd_avg, usage="[player]")
+        self.add_command(("stop", "stop3"), self.cmd_stop, usage="[amount] [map]")
+        self.add_command("sall", self.cmd_sall, usage="[map]")
+        self.add_command("srank", self.cmd_srank, usage="[rank] [map]")
+        self.add_command(("spb", "sme"), self.cmd_spb, usage="[map]")
+        self.add_command("stime", self.cmd_stime, usage="<player> [map]")
+        self.add_command("sranktime", self.cmd_sranktime, usage="<time> [map]")
+        self.add_command("savg", self.cmd_savg, usage="[player]")
+        self.add_command(("commands", "help"), self.cmd_commands)
         self.add_command("update", self.cmd_update)
         self.add_command("join", self.cmd_join, 2)
 
@@ -148,8 +148,7 @@ class race(minqlbot.Plugin):
 
     def cmd_time(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: ^3!time player [map]")
-            return
+            return minqlbot.RET_USAGE
         elif len(msg) == 2:
             name = msg[1]
             map = self.game().short_map.lower()
@@ -172,8 +171,7 @@ class race(minqlbot.Plugin):
         elif len(msg) == 3:
             map = msg[2].lower()
         else:
-            channel.reply("Usage: ^3!ranktime time [map]")
-            return
+            return minqlbot.RET_USAGE
 
         time = race.ms(msg[1])
         data = self.get_data(map)
@@ -272,8 +270,7 @@ class race(minqlbot.Plugin):
 
     def cmd_stime(self, player, msg, channel):
         if len(msg) == 1:
-            channel.reply("usage: ^3!stime player [map]")
-            return
+            return minqlbot.RET_USAGE
         elif len(msg) == 2:
             name = msg[1]
             map = self.game().short_map.lower()
@@ -296,8 +293,7 @@ class race(minqlbot.Plugin):
         elif len(msg) == 3:
             map = msg[2].lower()
         else:
-            channel.reply("Usage: ^3!sranktime time [map]")
-            return
+           return minqlbot.RET_USAGE
 
         time = race.ms(msg[1])
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")

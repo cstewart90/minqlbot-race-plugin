@@ -82,14 +82,19 @@ class race(minqlbot.Plugin):
             return
 
         data = self.get_data(map)
-        ranks = []
-        for i in range(amount):
-            score = data["scores"][i]
-            name = score["name"]
-            time = race.time_string(score["score"])
-            ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
+        if len(data["scores"]) == 0:
+            channel.reply("No times on ql.leeto.fi for ^3{}".format(map))
+        else:
+            if amount > len(data["scores"]):
+                amount = len(data["scores"])
+            ranks = []
+            for i in range(amount):
+                score = data["scores"][i]
+                name = score["name"]
+                time = race.time_string(score["score"])
+                ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
-        channel.reply("^2{}: {}".format(map, " ".join(ranks)))
+            channel.reply("^2{}: {}".format(map, " ".join(ranks)))
 
     def cmd_all(self, player, msg, channel):
         map = self.get_map(msg)
@@ -102,7 +107,7 @@ class race(minqlbot.Plugin):
                 times.append("^3{}. ^7{} ^2{}".format(rank, p, race.time_string(time)))
 
         if len(times) == 0:
-            channel.reply("No times were found for anyone in top 100 :(")
+            channel.reply("No times were found for anyone in top 100 for ^3{} ^2:(".format(map))
         else:
             times.sort(key=natural_keys)
             channel.reply("{}: {}".format(map, " ".join(times)))
@@ -212,14 +217,19 @@ class race(minqlbot.Plugin):
             return
 
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
-        ranks = []
-        for i in range(amount):
-            score = data["scores"][i]
-            name = score["name"]
-            time = race.time_string(score["score"])
-            ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
+        if len(data["scores"]) == 0:
+            channel.reply("No strafe times on ql.leeto.fi for ^3{}".format(map))
+        else:
+            if amount > len(data["scores"]):
+                amount = len(data["scores"])
+            ranks = []
+            for i in range(amount):
+                score = data["scores"][i]
+                name = score["name"]
+                time = race.time_string(score["score"])
+                ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
 
-        channel.reply("^2{}(strafe): {}".format(map, " ".join(ranks)))
+            channel.reply("^2{}(strafe): {}".format(map, " ".join(ranks)))
 
     def cmd_sall(self, player, msg, channel):
         map = self.get_map(msg)
@@ -232,7 +242,7 @@ class race(minqlbot.Plugin):
                 times.append("^3{}. ^7{} ^2{}".format(rank, p, race.time_string(time)))
 
         if len(times) == 0:
-            channel.reply("No strafe times were found for anyone on ql.leeto.fi :(")
+            channel.reply("No strafe times were found for anyone on ql.leeto.fi for ^3{} ^2:(".format(map))
         else:
             times.sort(key=natural_keys)
             channel.reply("{}(strafe): {}".format(map, " ".join(times)))

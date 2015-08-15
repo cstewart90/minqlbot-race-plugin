@@ -27,6 +27,7 @@ class race(minqlbot.Plugin):
         self.add_command("savg", self.cmd_savg)
         self.add_command("commands", self.cmd_commands)
         self.add_command("update", self.cmd_update)
+        self.add_command("join", self.cmd_join, 2)
 
         self.end_game_timer = None
 
@@ -318,11 +319,16 @@ class race(minqlbot.Plugin):
                           .format(name, average_rank, total_maps, medals[0], medals[1], medals[2]))
 
     def cmd_commands(self, player, msg, channel):
-        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100")
+        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !join")
 
     def cmd_update(self, player, msg, channel):
         self.write_data()
         self.write_data_qlstats()
+
+    def cmd_join(self, player, msg, channel):
+        n = self.find_player(minqlbot.NAME)
+        if n:
+            self.put(n, "f")
 
     def write_data(self):
         data = race.get_data_online(self.game().short_map.lower())

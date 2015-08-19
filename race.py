@@ -142,7 +142,7 @@ class race(minqlbot.Plugin):
         for p in self.players():
             rank, time, first_time = race.get_pb(data, p.clean_name)
             if rank != -1:
-                times.append("^3{}. ^7{} ^2{}".format(rank, p, race.time_string(time)))
+                times.append("^3{}.^8_^7{}^8_^2{}".format(rank, p, race.time_string(time)))
 
         if len(times) == 0:
             channel.reply("No times were found for anyone in top 100 for ^3{} ^2:(".format(map))
@@ -281,7 +281,7 @@ class race(minqlbot.Plugin):
         for p in self.players():
             rank, time, first_time = race.get_pb(data, p.clean_name)
             if rank != -1:
-                times.append("^3{}. ^7{} ^2{}".format(rank, p, race.time_string(time)))
+                times.append("^3{}.^8_^7{}^8_^2{}".format(rank, p, race.time_string(time)))
 
         if len(times) == 0:
             channel.reply("No strafe times were found for anyone on ql.leeto.fi for ^3{} ^2:(".format(map))

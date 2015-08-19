@@ -130,7 +130,7 @@ class race(minqlbot.Plugin):
                 score = data["scores"][i]
                 name = score["name"]
                 time = race.time_string(score["score"])
-                ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
+                ranks.append("^3{}.^8_^4{}^8_^2{}".format(i + 1, name, time))
 
             channel.reply("^2{}: {}".format(map, " ".join(ranks)))
 
@@ -269,7 +269,7 @@ class race(minqlbot.Plugin):
                 score = data["scores"][i]
                 name = score["name"]
                 time = race.time_string(score["score"])
-                ranks.append("^3{}. ^4{} ^2{}".format(i + 1, name, time))
+                ranks.append("^3{}.^8_^4{}^8_^2{}".format(i + 1, name, time))
 
             channel.reply("^2{}(strafe): {}".format(map, " ".join(ranks)))
 
@@ -371,7 +371,7 @@ class race(minqlbot.Plugin):
                           .format(name, average_rank, total_maps, medals[0], medals[1], medals[2]))
 
     def cmd_commands(self, player, msg, channel):
-        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !join")
+        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join")
 
     def cmd_update(self, player, msg, channel):
         self.write_data()

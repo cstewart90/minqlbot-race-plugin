@@ -62,7 +62,10 @@ class race(minqlbot.Plugin):
                     if rank != -1:
                         self.msg("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, rank, last, map))
                     else:
-                        self.msg("^3{} ^2would not be in top ^3{} ^2on ^3{}".format(time_s, last, map))
+                        if self.weps:
+                            self.msg("^3{} ^2would not be in top ^3{} ^2on ^3{}".format(time_s, last, map))
+                        else:
+                            self.msg("^3{} ^2would be rank ^3{} ^2on ^3{}".format(time_s, last+1, map))
 
             self.expecting_scores = False
 
@@ -93,9 +96,9 @@ class race(minqlbot.Plugin):
             if time < pb:
                 rank, time_diff = race.get_rank_from_time(data, time)
                 if rank == 1:
-                    self.send_command("say ^7{} ^2just broke the ^3world record! {}".format(name, time_diff))
+                    self.msg("^7{} ^2just broke the ^3world record! {}".format(name, time_diff))
                 else:
-                    self.send_command("say ^7{} ^2broke their PB and is now rank ^3{} {}".format(name, rank, time_diff))
+                    self.msg("^7{} ^2broke their PB and is now rank ^3{} {}".format(name, rank, time_diff))
 
     def cmd_top(self, player, msg, channel):
         if len(msg) == 1:

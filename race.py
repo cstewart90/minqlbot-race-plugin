@@ -7,6 +7,7 @@ import urllib.request
 class race(minqlbot.Plugin):
     def __init__(self):
         super().__init__()
+        self.add_hook("scores", self.handle_scores)
         self.add_hook("map", self.handle_map)
         self.add_hook("game_end", self.handle_game_end)
         self.add_hook("console", self.handle_console)
@@ -29,7 +30,41 @@ class race(minqlbot.Plugin):
         self.add_command("update", self.cmd_update)
         self.add_command("join", self.cmd_join, 2)
 
+        self.expecting_scores = False
+        self.player = None
+        self.weps = False
         self.end_game_timer = None
+
+    def handle_scores(self, scores):
+        if self.expecting_scores:
+            for score in scores:
+                name = score.player.clean_name.lower()
+                if name == self.player.clean_name.lower():
+                    map = self.game().short_map.lower()
+                    if self.weps:
+                        data = self.get_data(map)
+                        cmd = "!ranktime"
+                    else:
+                        data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
+                        map = "{}^2(strafe)".format(map)
+                        cmd = "!sranktime"
+
+                    time = score.score
+                    if time == -1:
+                        self.msg("^7Usage: ^6{0} <time> [map] ^7or just ^6{0} ^7if you have set a time.".format(cmd))
+                        self.expecting_scores = False
+                        return
+
+                    time_s = race.time_string(time)
+                    rank, _ = race.get_rank_from_time(data, time)
+                    last = len(data["scores"])
+
+                    if rank != -1:
+                        self.msg("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_s, rank, last, map))
+                    else:
+                        self.msg("^3{} ^2would not be in top ^3{} ^2on ^3{}".format(time_s, last, map))
+
+            self.expecting_scores = False
 
     def handle_map(self, map):
         self.write_data()
@@ -176,7 +211,11 @@ class race(minqlbot.Plugin):
         elif len(msg) == 3:
             map = msg[2].lower()
         else:
-            return minqlbot.RET_USAGE
+            self.expecting_scores = True
+            self.player = player
+            self.weps = True
+            self.scores()
+            return
 
         time = race.ms(msg[1])
         data = self.get_data(map)
@@ -303,7 +342,11 @@ class race(minqlbot.Plugin):
         elif len(msg) == 3:
             map = msg[2].lower()
         else:
-           return minqlbot.RET_USAGE
+            self.expecting_scores = True
+            self.player = player
+            self.weps = False
+            self.scores()
+            return
 
         time = race.ms(msg[1])
         data = self.get_data_qlstats("maps/" + map + "?ruleset=pql&weapons=off")
@@ -424,7 +467,7 @@ class race(minqlbot.Plugin):
         strafe_s = "^2(strafe)" if strafe else ""
 
         channel.reply(
-            "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{} {}".format(name, rank, last, time_s, time_diff_s,
+            "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{}{}".format(name, rank, last, time_s, time_diff_s,
                                                                               map, strafe_s))
 
     @staticmethod

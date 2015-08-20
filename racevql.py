@@ -247,7 +247,7 @@ class racevql(minqlbot.Plugin):
                 times.append("^3{}.^8_^7{}^8_^2{}".format(rank, p, racevql.time_string(time)))
 
         if len(times) == 0:
-            channel.reply("No strafe times were found for anyone on ql.leeto.fi on ^3{} ^2:(".format(map))
+            channel.reply("No strafe times were found for anyone on ql.leeto.fi for ^3{} ^2:(".format(map))
         else:
             times.sort(key=natural_keys)
             channel.reply("{}(strafe): {}".format(map, " ".join(times)))

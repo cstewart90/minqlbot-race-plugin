@@ -5,7 +5,7 @@ import json
 import pickle
 
 mode = "pql"
-class racetest(minqlbot.Plugin):
+class race(minqlbot.Plugin):
     def __init__(self):
         self.add_hook("map", self.handle_map)
         self.add_hook("game_end", self.handle_game_end)

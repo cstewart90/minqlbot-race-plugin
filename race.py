@@ -178,19 +178,20 @@ class race(minqlbot.Plugin):
     def handle_scores(self, scores):
         if self.expecting_scores:
             for score in scores:
-                if score.player == self.player:
+                if self.player == score.player.clean_name.lower():
                     time = score.score
+                    self.debug(time)
                     cmd = "ranktime" if self.weapons else "sranktime"
                     if time == -1:
                         self.ranktime([cmd], "", minqlbot.CHAT_CHANNEL, self.weapons)
-
-                    self.ranktime([cmd, time_string(time)], "", minqlbot.CHAT_CHANNEL, self.weapons)
+                    else:
+                        self.ranktime([cmd, time_string(time)], "", minqlbot.CHAT_CHANNEL, self.weapons)
+        self.expecting_scores = False
 
     def ranktime(self, msg, player, channel, weapons):
         if len(msg) == 1 and player:
-            self.debug("1")
             self.expecting_scores = True
-            self.player = player
+            self.player = player.clean_name.lower()
             self.weapons = weapons
             self.scores()
             return

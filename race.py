@@ -75,8 +75,7 @@ class race(minqlbot.Plugin):
                 pb = int(scores.scores[-1]["score"])
             if time < pb:
                 rank = scores.rank_from_time(time)
-                _, first = scores.rank(1)
-                time_diff = abs(time - first)
+                time_diff = abs(time - scores.first_time)
                 if rank == 1:
                     time_diff = "^8[^2-" + time_string(time_diff) + "^8]"
                     self.msg("^7{} ^2just broke the ^3world record! {}".format(name, time_diff))

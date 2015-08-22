@@ -1,5 +1,6 @@
 import minqlbot
 import re
+import random
 import urllib.request
 import json
 import pickle
@@ -28,6 +29,7 @@ class race(minqlbot.Plugin):
         self.add_command("avg", self.cmd_avg, usage="[player]")
         self.add_command("savg", self.cmd_savg, usage="[player]")
         self.add_command("join", self.cmd_join)
+        self.add_command("random", self.cmd_random)
         self.add_command(("help", "commands"), self.cmd_help)
 
         self.expecting_scores = False
@@ -343,8 +345,19 @@ class race(minqlbot.Plugin):
     def cmd_join(self, player, msg, channel):
         self.send_command("team f")
 
+    def cmd_random(self, player, msg, channel):
+        maps = ["arkinholm", "basesiege", "beyondreality", "blackcathedral", "brimstoneabbey", "campercrossings",
+                "campgrounds", "citycrossings", "courtyard", "deepinside", "distantscreams", "divineintermission",
+                "duelingkeeps", "electrocution" "falloutbunker", "finnegans", "fluorescent", "foolishlegacy",
+                "futurecrossings", "gospelcrossings", "henhouse", "industrialrevolution", "infinity", "innersanctums",
+                "ironworks", "japanesecastles", "jumpwerkz", "newcerberon", "overlord", "pillbox", "pulpfriction",
+                "qzpractice1", "qzpractice2", "ragnarok", "railyard", "rebound", "reflux", "repent", "scornforge",
+                "shakennotstirred", "shiningforces", "siberia", "skyward", "spacechamber", "spacectf", "spidercrossings",
+                "stonekeep", "stronghold", "theatreofpain", "theedge", "trinity", "troubledwaters", "warehouse"]
+        self.callvote("map " + random.choice(maps))
+
     def cmd_help(self, player, msg, channel):
-        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join")
+        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join !ramdom")
 
     def get_map_scores(self, map_name, weapons):
         current_map = self.game().short_map

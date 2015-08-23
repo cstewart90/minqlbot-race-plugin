@@ -36,8 +36,10 @@ s in front of a command means strafe. Optional arguments are surrounded by squar
 >Show top 100 time for a map.
 
 **!update**
->Update local cached times for current map
+>Update local cached times for current map.
 
 **!join**
 >Make the bot join the game.
 
+**!random**
+>Callvotes a random map.

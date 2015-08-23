@@ -90,12 +90,13 @@ class race(minqlbot.Plugin):
         self.rank(msg, channel, False)
 
     def cmd_top100(self, player, msg, channel):
-        if len(msg) == 1:
-            self.rank(["rank", "100"], channel, True)
-        elif len(msg) == 2:
-            self.rank(["rank", "100"], channel, True)
-        else:
-            return minqlbot.RET_USAGE
+        if mode == "pql":
+            if len(msg) == 1:
+                self.rank(["rank", "100"], channel, True)
+            elif len(msg) == 2:
+                self.rank(["rank", "100"], channel, True)
+            else:
+                return minqlbot.RET_USAGE
 
     def rank(self, msg, channel, weapons):
         if len(msg) == 1:

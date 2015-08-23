@@ -295,7 +295,7 @@ class race(minqlbot.Plugin):
             # times_joined = " ".join("^3{}.^8_{}".format(key, val) for (key, val) in sorted(times.items()))
             for rank, time in sorted(times.items()):
                 times_list.append(" ^3{}. {}".format(rank, time))
-            self.output_times(map_name, times, channel)
+            self.output_times(map_name, times_list, channel)
         else:
             if scores.leeto:
                 channel.reply("No times were found for anyone on ^3{} ^2:(".format(map_name))

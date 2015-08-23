@@ -358,7 +358,7 @@ class race(minqlbot.Plugin):
         self.callvote("map " + random.choice(maps))
 
     def cmd_help(self, player, msg, channel):
-        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join !ramdom")
+        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join !random")
 
     def get_map_scores(self, map_name, weapons):
         current_map = self.game().short_map

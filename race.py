@@ -256,15 +256,15 @@ class race(minqlbot.Plugin):
 
         if amount > len(scores.scores):
             amount = len(scores.scores)
-        ranks = []
+        times = []
         for i in range(amount):
             name, time = scores.rank(i + 1)
-            ranks.append("^3{}.^8_^4{}^8_^2{}".format(i + 1, name, time_string(time)))
+            times.append(" ^3{}. ^4{} ^2{}".format(i + 1, name, time_string(time)))
 
         if not weapons:
             map_name += "^2(strafe)"
 
-        channel.reply("^3{}: {}".format(map_name, " ".join(ranks)))
+        self.output_times(map_name, times, channel)
 
     def cmd_all(self, player, msg, channel):
         self.all(msg, channel, True)
@@ -286,13 +286,16 @@ class race(minqlbot.Plugin):
         for p in self.players():
             rank, time = scores.pb(p.clean_name)
             if rank != -1:
-                times[rank] = "^7{}^8_^2{}".format(p, time_string(time))
+                times[rank] = "^7{} ^2{}".format(p, time_string(time))
 
         if not weapons:
             map_name += "^2(strafe)"
         if times:
-            times_joined = " ".join("^3{}.^8_{}".format(key, val) for (key, val) in sorted(times.items()))
-            channel.reply("^3{}: {}".format(map_name, times_joined))
+            times_list = []
+            # times_joined = " ".join("^3{}.^8_{}".format(key, val) for (key, val) in sorted(times.items()))
+            for rank, time in sorted(times.items()):
+                times_list.append(" ^3{}. {}".format(rank, time))
+            self.output_times(map_name, times, channel)
         else:
             if scores.leeto:
                 channel.reply("No times were found for anyone on ^3{} ^2:(".format(map_name))
@@ -372,6 +375,17 @@ class race(minqlbot.Plugin):
         else:
             scores = RaceScores(map_name, weapons)
         return scores
+
+    def output_times(self, map_name, times, channel):
+        output = ["^2{}:".format(map_name)]
+        for time in times:
+            if len(output[len(output) - 1]) + len(time) < 90:
+                output[len(output) - 1] += time
+            else:
+                output.append(time)
+
+        for out in output:
+            channel.reply(out.lstrip())
 
 
 class RaceScores:

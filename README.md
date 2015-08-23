@@ -23,10 +23,10 @@ s in front of a command means strafe. Optional arguments are surrounded by squar
 **!(s)rank [rank] [map]**
 >Show the x rank time for a map. Default rank if none is given is 1.
 
-**!(s)time <player> [map]**
+**!(s)time &lt;player&gt; [map]**
 >Show that players time for a map.
 
-**!(s)ranktime <time> [map]**
+**!(s)ranktime &lt;time&gt; [map]**
 >Show what rank the given time would be on a map.
 
 **!(s)avg [player]**

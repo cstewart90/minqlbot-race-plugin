@@ -113,7 +113,7 @@ class race(minqlbot.Plugin):
             rank = int(msg[1])
             map_name = msg[2]
         else:
-            channel.reply("^7Usage: ^6!{} [rank] [map]".format(msg[0]))
+            channel.reply("^7Usage: ^6{} [rank] [map]".format(msg[0]))
             return
 
         scores = self.get_map_scores(map_name, weapons)
@@ -138,7 +138,7 @@ class race(minqlbot.Plugin):
         elif len(msg) == 2:
             map_name = msg[1]
         else:
-            channel.reply("^7Usage: ^6!{} [map]".format(msg[0]))
+            channel.reply("^7Usage: ^6{} [map]".format(msg[0]))
             return
 
         scores = self.get_map_scores(map_name, weapons)
@@ -158,6 +158,7 @@ class race(minqlbot.Plugin):
         self.time(msg, channel, True)
 
     def cmd_stime(self, player, msg, channel):
+        self.debug(msg)
         self.time(msg, channel, False)
 
     def time(self, msg, channel, weapons):
@@ -169,7 +170,7 @@ class race(minqlbot.Plugin):
             map_name = msg[2]
             self.pb(minqlbot.DummyPlayer(name), ["pb", map_name], channel, weapons)
         else:
-            channel.reply("^7Usage: ^6!{} <player> [map]".format(msg[0]))
+            channel.reply("^7Usage: ^6{} <player> [map]".format(msg[0]))
 
     def cmd_ranktime(self, player, msg, channel):
         self.ranktime(msg, player, channel, True)
@@ -183,7 +184,7 @@ class race(minqlbot.Plugin):
                 if self.player == score.player.clean_name.lower():
                     time = score.score
                     self.debug(time)
-                    cmd = "ranktime" if self.weapons else "sranktime"
+                    cmd = "!ranktime" if self.weapons else "!sranktime"
                     if time == -1:
                         self.ranktime([cmd], "", minqlbot.CHAT_CHANNEL, self.weapons)
                     else:
@@ -202,7 +203,7 @@ class race(minqlbot.Plugin):
         elif len(msg) == 3:
             map_name = msg[2]
         else:
-            channel.reply("^7Usage: ^6!{0} <time> [map] ^7or just ^6!{0} ^7 if you have set a time".format(msg[0]))
+            channel.reply("^7Usage: ^6{0} <time> [map] ^7or just ^6{0} ^7 if you have set a time".format(msg[0]))
             return
 
         scores = self.get_map_scores(map_name, weapons)
@@ -241,7 +242,7 @@ class race(minqlbot.Plugin):
             amount = int(msg[1])
             map_name = msg[2]
         else:
-            channel.reply("^7Usage: ^6!{} [amount] [map]".format(msg[0]))
+            channel.reply("^7Usage: ^6{} [amount] [map]".format(msg[0]))
             return
 
         if amount > 20:
@@ -277,7 +278,7 @@ class race(minqlbot.Plugin):
         elif len(msg) == 2:
             map_name = msg[1]
         else:
-            channel.reply("^7Usage: ^6!{} [map]".format(msg[0]))
+            channel.reply("^7Usage: ^6{} [map]".format(msg[0]))
             return
 
         scores = self.get_map_scores(map_name, weapons)
@@ -310,7 +311,7 @@ class race(minqlbot.Plugin):
         elif len(msg) == 2:
             name = msg[1]
         else:
-            channel.reply("^7Usage: ^6!{} [player]".format(msg[0]))
+            channel.reply("^7Usage: ^6{} [player]".format(msg[0]))
             return
 
         weps = "on" if weapons else "off"

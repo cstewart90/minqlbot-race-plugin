@@ -26,7 +26,7 @@ s in front of a command means strafe. Optional arguments are surrounded by squar
 **!(s)time &lt;player&gt; [map]**
 >Show that players time for a map.
 
-**!(s)ranktime &lt;time&gt; [map]**
+**!(s)ranktime &lt;time&gt; [map] or just !(s)ranktime if you have set a time**
 >Show what rank the given time would be on a map.
 
 **!(s)avg [player]**

@@ -8,7 +8,7 @@ Edit python/config.cfg and add race to plugins list. For vql replace "pql" on li
 # Commands
 s in front of a command means strafe. Optional arguments are surrounded by square brackets. For most commands if no map is given it will use current map.
 
-**!commands**
+**!help/!commands**
 >Show all the commands.
 
 **!(s)top [amount] [map]**

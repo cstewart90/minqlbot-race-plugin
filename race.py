@@ -120,7 +120,7 @@ class race(minqlbot.Plugin):
         if not weapons:
             map_name += "^2(strafe)"
         if time == -1:
-            output = "No rank ^3{} ^2time found for ^3{}".format(rank, map_name)
+            output = "No rank ^3{} ^2time found on ^3{}".format(rank, map_name)
         else:
             output = scores.output(name, rank, time)
         channel.reply(output)
@@ -208,17 +208,21 @@ class race(minqlbot.Plugin):
         scores = self.get_map_scores(map_name, weapons)
         time = ms(msg[1])
         rank = scores.rank_from_time(time)
+        last_rank = scores.last_rank + 1
         if not weapons:
             map_name += "^2(strafe)"
+        if not scores.leeto and scores.last_rank == 100:
+            last_rank = 100
         if rank == -1:
-            if scores.leeto or scores.last_rank < 100:
-                output = "^3{} ^2would be rank ^3{} ^2on ^3{}".format(time_string(time), scores.last_rank + 1, map_name)
+            if scores.last_rank == 0:
+                rank = 1
+            elif scores.leeto:
+                rank = last_rank
             else:
-                output = "^3{} ^2would not be in top ^3{} ^2on ^3{}".format(time_string(time), scores.last_rank, map_name)
-        else:
-            output = "^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_string(time), rank, scores.last_rank,
-                                                                            map_name)
-        channel.reply(output)
+                channel.reply("^3{} ^2would not be in top ^3100 ^2on ^3{}".format(time_string(time), map_name))
+                return
+        channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_string(time), rank,
+                                                                             last_rank, map_name))
 
     def cmd_top(self, player, msg, channel):
         self.top(msg, channel, True)

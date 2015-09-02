@@ -35,13 +35,12 @@ class race(minqlbot.Plugin):
         self.expecting_scores = False
         self.player = None
         self.weapons = True
-        self.end_game_timer = None
 
     def handle_map(self, map):
         self.write_scores()
 
     def handle_game_end(self, game, score, winner):
-        self.end_game_timer = self.delay(5, self.write_scores())
+        self.delay(5, self.write_scores)
 
     def cmd_update(self, player, msg, channel):
         self.write_scores()

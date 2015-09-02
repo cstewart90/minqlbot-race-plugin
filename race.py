@@ -253,8 +253,10 @@ class race(minqlbot.Plugin):
             return
 
         scores = self.get_map_scores(map_name, weapons)
+        if not weapons:
+            map_name += "^2(strafe)"
         if not scores.scores:
-            channel.reply("No times were found on {}".format(map_name))
+            channel.reply("No times were found on ^3{}".format(map_name))
             return
 
         if amount > len(scores.scores):
@@ -264,8 +266,6 @@ class race(minqlbot.Plugin):
             name, time = scores.rank(i + 1)
             times.append(" ^3{}. ^4{} ^2{}".format(i + 1, name, time_string(time)))
 
-        if not weapons:
-            map_name += "^2(strafe)"
 
         self.output_times(map_name, times, channel)
 

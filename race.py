@@ -13,21 +13,14 @@ class race(minqlbot.Plugin):
         self.add_hook("console", self.handle_console)
         self.add_hook("scores", self.handle_scores)
         self.add_command("update", self.cmd_update)
-        self.add_command("rank", self.cmd_rank, usage="[rank] [map]")
-        self.add_command("srank", self.cmd_srank, usage="[rank] [map]")
+        self.add_command(("rank", "srank"), self.cmd_rank, usage="[rank] [map]")
         self.add_command("top100", self.cmd_top100, usage="[map]")
-        self.add_command(("pb", "me"), self.cmd_pb, usage="[map]")
-        self.add_command(("spb", "sme"), self.cmd_spb, usage="[map]")
-        self.add_command("time", self.cmd_time, usage="<player> [map]")
-        self.add_command("stime", self.cmd_stime, usage="<player> [map]")
-        self.add_command("ranktime", self.cmd_ranktime, usage="<time> [map]")
-        self.add_command("sranktime", self.cmd_sranktime, usage="<time> [map]")
-        self.add_command(("top", "top3"), self.cmd_top, usage="[amount] [map]")
-        self.add_command(("stop", "stop3"), self.cmd_stop, usage="[amount] [map]")
-        self.add_command("all", self.cmd_all, usage="[map]")
-        self.add_command("sall", self.cmd_sall, usage="[map]")
-        self.add_command("avg", self.cmd_avg, usage="[player]")
-        self.add_command("savg", self.cmd_savg, usage="[player]")
+        self.add_command(("pb", "me", "spb", "sme"), self.cmd_pb, usage="[map]")
+        self.add_command(("time", "stime"), self.cmd_time, usage="<player> [map]")
+        self.add_command(("ranktime", "sranktime"), self.cmd_ranktime, usage="<time> [map]")
+        self.add_command(("top", "stop"), self.cmd_top, usage="[amount] [map]")
+        self.add_command(("all", "sall"), self.cmd_all, usage="[map]")
+        self.add_command(("avg", "savg"), self.cmd_avg, usage="[player]")
         self.add_command("join", self.cmd_join)
         self.add_command("random", self.cmd_random)
         self.add_command(("help", "commands"), self.cmd_help)
@@ -70,7 +63,7 @@ class race(minqlbot.Plugin):
             scores = self.get_map_scores(self.game().short_map, True)
             rank, pb = scores.pb(name_clean)
             # if they don't have a time set their pb to the last time(normally 100)
-            if rank == -1:
+            if not rank:
                 pb = int(scores.scores[-1]["score"])
             if time < pb:
                 rank = scores.rank_from_time(time)
@@ -83,21 +76,6 @@ class race(minqlbot.Plugin):
                     self.msg("^7{} ^2set a new pb and is now rank ^3{} {}".format(name, rank, time_diff))
 
     def cmd_rank(self, player, msg, channel):
-        self.rank(msg, channel, True)
-
-    def cmd_srank(self, player, msg, channel):
-        self.rank(msg, channel, False)
-
-    def cmd_top100(self, player, msg, channel):
-        if mode == "pql":
-            if len(msg) == 1:
-                self.rank(["!rank", "100"], channel, True)
-            elif len(msg) == 2:
-                self.rank(["!rank", "100", msg[1]], channel, True)
-            else:
-                return minqlbot.RET_USAGE
-
-    def rank(self, msg, channel, weapons):
         if len(msg) == 1:
             rank = 1
             map_name = self.game().short_map
@@ -112,85 +90,59 @@ class race(minqlbot.Plugin):
             rank = int(msg[1])
             map_name = msg[2]
         else:
-            channel.reply("^7Usage: ^6{} [rank] [map]".format(msg[0]))
-            return
+            return minqlbot.RET_USAGE
 
+        weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         name, time = scores.rank(rank)
         if not weapons:
             map_name += "^2(strafe)"
-        if time == -1:
-            output = "No rank ^3{} ^2time found on ^3{}".format(rank, map_name)
+        if time:
+            channel.reply(scores.output(name, rank, time))
         else:
-            output = scores.output(name, rank, time)
-        channel.reply(output)
+            channel.reply("No rank ^3{} ^2time found on ^3{}".format(rank, map_name))
+
+    def cmd_top100(self, player, msg, channel):
+        if mode == "pql":
+            if len(msg) == 1:
+                self.cmd_rank(player, ["!rank", "100"], channel)
+            elif len(msg) == 2:
+                self.cmd_rank(player, ["!rank", "100", msg[1]], channel)
+            else:
+                return minqlbot.RET_USAGE
 
     def cmd_pb(self, player, msg, channel):
-        self.pb(player, msg, channel, True)
-
-    def cmd_spb(self, player, msg, channel):
-        self.pb(player, msg, channel, False)
-
-    def pb(self, player, msg, channel, weapons):
         if len(msg) == 1:
             map_name = self.game().short_map
         elif len(msg) == 2:
             map_name = msg[1]
         else:
-            channel.reply("^7Usage: ^6{} [map]".format(msg[0]))
-            return
+            return minqlbot.RET_USAGE
 
+        weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         rank, time = scores.pb(player.clean_name)
         if not weapons:
             map_name += "^2(strafe)"
-        if rank == -1:
-            if scores.leeto:
-                output = "No time found for ^7{} ^2on ^3{}".format(player, map_name)
-            else:
-                output = "No time found for ^7{} ^2in top 100 for ^3{}".format(player, map_name)
+        if rank:
+            channel.reply(scores.output(player, rank, time))
         else:
-            output = scores.output(player, rank, time)
-        channel.reply(output)
+            if scores.leeto:
+                channel.reply("No time found for ^7{} ^2on ^3{}".format(player, map_name))
+            else:
+                channel.reply("No time found for ^7{} ^2in top 100 for ^3{}".format(player, map_name))
 
     def cmd_time(self, player, msg, channel):
-        self.time(msg, channel, True)
-
-    def cmd_stime(self, player, msg, channel):
-        self.debug(msg)
-        self.time(msg, channel, False)
-
-    def time(self, msg, channel, weapons):
+        cmd = "!spb" if "s" in msg[0] else "!pb"
         if len(msg) == 2:
-            name = msg[1]
-            self.pb(minqlbot.DummyPlayer(name), ["pb"], channel, weapons)
+            self.cmd_pb(minqlbot.DummyPlayer(msg[1]), [cmd], channel)
         elif len(msg) == 3:
-            name = msg[1]
-            map_name = msg[2]
-            self.pb(minqlbot.DummyPlayer(name), ["pb", map_name], channel, weapons)
+            self.cmd_pb(minqlbot.DummyPlayer(msg[1]), [cmd, msg[2]], channel)
         else:
-            channel.reply("^7Usage: ^6{} <player> [map]".format(msg[0]))
+            return minqlbot.RET_USAGE
 
     def cmd_ranktime(self, player, msg, channel):
-        self.ranktime(msg, player, channel, True)
-
-    def cmd_sranktime(self, player, msg, channel):
-        self.ranktime(msg, player, channel, False)
-
-    def handle_scores(self, scores):
-        if self.expecting_scores:
-            for score in scores:
-                if self.player == score.player.clean_name.lower():
-                    time = score.score
-                    self.debug(time)
-                    cmd = "!ranktime" if self.weapons else "!sranktime"
-                    if time == -1:
-                        self.ranktime([cmd], "", minqlbot.CHAT_CHANNEL, self.weapons)
-                    else:
-                        self.ranktime([cmd, time_string(time)], "", minqlbot.CHAT_CHANNEL, self.weapons)
-        self.expecting_scores = False
-
-    def ranktime(self, msg, player, channel, weapons):
+        weapons = False if "s" in msg[0] else True
         if len(msg) == 1 and player:
             self.expecting_scores = True
             self.player = player.clean_name.lower()
@@ -213,24 +165,30 @@ class race(minqlbot.Plugin):
             map_name += "^2(strafe)"
         if not scores.leeto and scores.last_rank == 100:
             last_rank = 100
-        if rank == -1:
+        if rank:
+            channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_string(time), rank,
+                                                                                 last_rank, map_name))
+        else:
             if scores.last_rank == 0:
                 rank = 1
             elif scores.leeto:
                 rank = last_rank
             else:
                 channel.reply("^3{} ^2would not be in top ^3100 ^2on ^3{}".format(time_string(time), map_name))
-                return
-        channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_string(time), rank,
-                                                                             last_rank, map_name))
+
+    def handle_scores(self, scores):
+        if self.expecting_scores:
+            for score in scores:
+                if self.player == score.player.clean_name.lower():
+                    time = score.score
+                    cmd = "!ranktime" if self.weapons else "!sranktime"
+                    if time == -1:
+                        self.cmd_ranktime("", [cmd], minqlbot.CHAT_CHANNEL)
+                    else:
+                        self.cmd_ranktime("", [cmd, time_string(time)], minqlbot.CHAT_CHANNEL)
+        self.expecting_scores = False
 
     def cmd_top(self, player, msg, channel):
-        self.top(msg, channel, True)
-
-    def cmd_stop(self, player, msg, channel):
-        self.top(msg, channel, False)
-
-    def top(self, msg, channel, weapons):
         if len(msg) == 1:
             amount = 3
             map_name = self.game().short_map
@@ -245,13 +203,12 @@ class race(minqlbot.Plugin):
             amount = int(msg[1])
             map_name = msg[2]
         else:
-            channel.reply("^7Usage: ^6{} [amount] [map]".format(msg[0]))
-            return
-
+            return minqlbot.RET_USAGE
         if amount > 20:
             channel.reply("Please use value <=20")
             return
 
+        weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         if not weapons:
             map_name += "^2(strafe)"
@@ -266,29 +223,22 @@ class race(minqlbot.Plugin):
             name, time = scores.rank(i + 1)
             times.append(" ^3{}. ^4{} ^2{}".format(i + 1, name, time_string(time)))
 
-
         self.output_times(map_name, times, channel)
 
     def cmd_all(self, player, msg, channel):
-        self.all(msg, channel, True)
-
-    def cmd_sall(self, player, msg, channel):
-        self.all(msg, channel, False)
-
-    def all(self, msg, channel, weapons):
         if len(msg) == 1:
             map_name = self.game().short_map
         elif len(msg) == 2:
             map_name = msg[1]
         else:
-            channel.reply("^7Usage: ^6{} [map]".format(msg[0]))
-            return
+            return minqlbot.RET_USAGE
 
+        weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         times = {}
         for p in self.players():
             rank, time = scores.pb(p.clean_name)
-            if rank != -1:
+            if rank:
                 times[rank] = "^7{} ^2{}".format(p, time_string(time))
 
         if not weapons:
@@ -306,20 +256,14 @@ class race(minqlbot.Plugin):
                 channel.reply("No times were found for anyone in top 100 for ^3{} ^2:(".format(map_name))
 
     def cmd_avg(self, player, msg, channel):
-        self.avg(player, msg, channel, True)
-
-    def cmd_savg(self, player, msg, channel):
-        self.avg(player, msg, channel, False)
-
-    def avg(self, player, msg, channel, weapons):
         if len(msg) == 1:
             name = player.clean_name
         elif len(msg) == 2:
             name = msg[1]
         else:
-            channel.reply("^7Usage: ^6{} [player]".format(msg[0]))
-            return
+            return minqlbot.RET_USAGE
 
+        weapons = False if "s" in msg[0] else True
         weps = "on" if weapons else "off"
         url = "http://ql.leeto.fi/api/players/{}/race?ruleset={}&weapons={}".format(name, mode, weps)
         request = urllib.request.Request(url, headers={
@@ -347,7 +291,7 @@ class race(minqlbot.Plugin):
 
         avg = total_rank / total_maps
         channel.reply("^7{} ^2average {}rank: ^3{:.2f}^2({} maps) ^71st: ^3{} ^72nd: ^3{} ^73rd: ^3{}"
-                   .format(name, strafe, avg, total_maps, medals[0], medals[1], medals[2]))
+                      .format(name, strafe, avg, total_maps, medals[0], medals[1], medals[2]))
 
     def cmd_join(self, player, msg, channel):
         self.send_command("team f")
@@ -369,10 +313,7 @@ class race(minqlbot.Plugin):
     def get_map_scores(self, map_name, weapons):
         current_map = self.game().short_map
         if map_name.lower() == current_map.lower():
-            if weapons:
-                filename = "race_scores.pickle"
-            else:
-                filename = "race_scores_strafe.pickle"
+            filename = "race_scores.pickle" if weapons else "race_scores_strafe.pickle"
             with open("python\\" + filename, "rb") as handle:
                 scores = pickle.load(handle)
         else:
@@ -423,7 +364,7 @@ class RaceScores:
         try:
             score = self.scores[rank - 1]
         except IndexError:
-            return -1, -1
+            return None, None
 
         if self.leeto:
             name = str(score["PLAYER"])
@@ -434,17 +375,13 @@ class RaceScores:
         return name, time
 
     def rank_from_time(self, time):
-        rank = -1
         for i, score in enumerate(self.scores):
             if self.leeto:
                 if time < int(score["SCORE"]):
-                    rank = i + 1
-                    break
+                    return i + 1
             else:
                 if time < int(score["score"]):
-                    rank = i + 1
-                    break
-        return rank
+                    return i + 1
 
     def pb(self, player):
         for i, score in enumerate(self.scores):
@@ -453,7 +390,7 @@ class RaceScores:
                 time = score["SCORE"] if self.leeto else int(score["score"])
                 rank = i + 1
                 return rank, time
-        return -1, -1
+        return None, None
 
     def output(self, name, rank, time):
         if rank != 1:

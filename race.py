@@ -5,7 +5,9 @@ import urllib.request
 import json
 import pickle
 
+# Movement Style: pql or vql
 mode = "pql"
+
 class race(minqlbot.Plugin):
     def __init__(self):
         self.add_hook("map", self.handle_map)
@@ -165,16 +167,16 @@ class race(minqlbot.Plugin):
             map_name += "^2(strafe)"
         if not scores.leeto and scores.last_rank == 100:
             last_rank = 100
-        if rank:
-            channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_string(time), rank,
-                                                                                 last_rank, map_name))
-        else:
+        if not rank:
             if scores.last_rank == 0:
                 rank = 1
             elif scores.leeto:
                 rank = last_rank
             else:
                 channel.reply("^3{} ^2would not be in top ^3100 ^2on ^3{}".format(time_string(time), map_name))
+                return
+        channel.reply("^3{} ^2would be rank ^3{} ^2of ^3{} ^2on ^3{}".format(time_string(time), rank,
+                                                                             last_rank, map_name))
 
     def handle_scores(self, scores):
         if self.expecting_scores:

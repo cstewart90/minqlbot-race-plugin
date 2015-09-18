@@ -282,14 +282,18 @@ class race(minqlbot.Plugin):
         total_rank = 0
         total_maps = 0
         medals = [0, 0, 0]
+        maps = []
         for score in scores:
             # don't include removed maps
-            if score["MAP"] != "bloodlust" and score["MAP"] != "doubleimpact" and score["MAP"] != "eviscerated" and score["MAP"] != "industrialaccident":
-                rank = score["RANK"]
-                if 1 <= rank <= 3:
-                    medals[rank - 1] += 1
-                total_rank += rank
-                total_maps += 1
+            map_name = score["MAP"]
+            if map_name != "bloodlust" and map_name != "doubleimpact" and map_name != "eviscerated" and map_name != "industrialaccident":
+                if map_name not in maps:
+                    maps.append(map_name)
+                    rank = score["RANK"]
+                    if 1 <= rank <= 3:
+                        medals[rank - 1] += 1
+                    total_rank += rank
+                    total_maps += 1
 
         avg = total_rank / total_maps
         channel.reply("^7{} ^2average {}rank: ^3{:.2f}^2({} maps) ^71st: ^3{} ^72nd: ^3{} ^73rd: ^3{}"

@@ -10,7 +10,7 @@ mode = "pql"
 
 maps = ["arkinholm", "basesiege", "beyondreality", "blackcathedral", "brimstoneabbey", "campercrossings",
         "campgrounds", "citycrossings", "courtyard", "deepinside", "distantscreams", "divineintermission",
-        "duelingkeeps", "electrocution" "falloutbunker", "finnegans", "fluorescent", "foolishlegacy",
+        "duelingkeeps", "electrocution", "falloutbunker", "finnegans", "fluorescent", "foolishlegacy",
         "futurecrossings", "gospelcrossings", "henhouse", "industrialrevolution", "infinity", "innersanctums",
         "ironworks", "japanesecastles", "jumpwerkz", "newcerberon", "overlord", "pillbox", "pulpfriction",
         "qzpractice1", "qzpractice2", "ragnarok", "railyard", "rebound", "reflux", "repent", "scornforge",

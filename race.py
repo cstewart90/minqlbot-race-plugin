@@ -5,7 +5,6 @@ import json
 import pickle
 import minqlbot
 
-
 # Movement Style: pql or vql
 mode = "pql"
 
@@ -105,6 +104,10 @@ class race(minqlbot.Plugin):
         else:
             return minqlbot.RET_USAGE
 
+        map_name = self.map_prefix(map_name, channel)
+        if not map_name:
+            return
+
         weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         name, time = scores.rank(rank)
@@ -132,6 +135,9 @@ class race(minqlbot.Plugin):
         else:
             return minqlbot.RET_USAGE
 
+        map_name = self.map_prefix(map_name, channel)
+        if not map_name:
+            return
         weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         rank, time = scores.pb(player.clean_name)
@@ -170,6 +176,9 @@ class race(minqlbot.Plugin):
             channel.reply("^7Usage: ^6{0} <time> [map] ^7or just ^6{0} ^7 if you have set a time".format(msg[0]))
             return
 
+        map_name = self.map_prefix(map_name, channel)
+        if not map_name:
+            return
         scores = self.get_map_scores(map_name, weapons)
         time = time_ms(msg[1])
         rank = scores.rank_from_time(time)
@@ -221,6 +230,9 @@ class race(minqlbot.Plugin):
             channel.reply("Please use value <=20")
             return
 
+        map_name = self.map_prefix(map_name, channel)
+        if not map_name:
+            return
         weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         if not weapons:
@@ -246,6 +258,9 @@ class race(minqlbot.Plugin):
         else:
             return minqlbot.RET_USAGE
 
+        map_name = self.map_prefix(map_name, channel)
+        if not map_name:
+            return
         weapons = False if "s" in msg[0] else True
         scores = self.get_map_scores(map_name, weapons)
         times = {}
@@ -341,6 +356,14 @@ class race(minqlbot.Plugin):
         for out in output:
             channel.reply(out.lstrip())
 
+    def map_prefix(self, prefix, channel):
+        """Returns the first map which matches the prefix."""
+        map_name = next((x for x in maps if x.startswith(prefix)), None)
+        if map_name:
+            return map_name
+        else:
+            channel.reply("No map found for ^3{}.".format(prefix))
+
 
 class RaceScores:
     def __init__(self, map_name, weapons):
@@ -359,7 +382,7 @@ class RaceScores:
                 self.first_time = int(self.scores[0]["score"])
 
     def get_data(self):
-        """Get the data for the map from quakelive.com or ql.leeto.fi"""
+        """Gets the scores for the map from quakelive.com or ql.leeto.fi"""
         if self.leeto:
             weapons = "on" if self.weapons else "off"
             url = "http://ql.leeto.fi/api/race/maps/{}?ruleset={}&weapons={}".format(self.map_name, mode, weapons)
@@ -437,4 +460,3 @@ def time_string(time):
     m, s = divmod(time, 60)
     s = str(s).zfill(2)
     return "{}:{}.{}".format(m, s, ms)
-

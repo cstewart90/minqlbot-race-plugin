@@ -359,6 +359,7 @@ class RaceScores:
                 self.first_time = int(self.scores[0]["score"])
 
     def get_data(self):
+        """Get the data for the map from quakelive.com or ql.leeto.fi"""
         if self.leeto:
             weapons = "on" if self.weapons else "off"
             url = "http://ql.leeto.fi/api/race/maps/{}?ruleset={}&weapons={}".format(self.map_name, mode, weapons)
@@ -371,6 +372,7 @@ class RaceScores:
         return data["data"]["scores"] if self.leeto else data["scores"]
 
     def rank(self, rank):
+        """Returns name and time of the rank"""
         try:
             score = self.scores[rank - 1]
         except IndexError:
@@ -385,6 +387,7 @@ class RaceScores:
         return name, time
 
     def rank_from_time(self, time):
+        """Returns the rank the time would be"""
         for i, score in enumerate(self.scores):
             if self.leeto:
                 if time < int(score["SCORE"]):
@@ -394,6 +397,7 @@ class RaceScores:
                     return i + 1
 
     def pb(self, player):
+        """Returns a players rank and time"""
         for i, score in enumerate(self.scores):
             name = str(score["PLAYER"]) if self.leeto else str(score["name"])
             if player.lower() == name.lower():
@@ -403,6 +407,7 @@ class RaceScores:
         return None, None
 
     def output(self, name, rank, time):
+        """Returns the output which will be sent to the channel"""
         if rank != 1:
             time_diff = str(time - self.first_time)
             time_diff = time_diff.zfill(3)
@@ -416,11 +421,14 @@ class RaceScores:
 
 
 def time_ms(time_string):
+    """Returns time in milliseconds."""
     minutes, seconds = (["0"] + time_string.split(":"))[-2:]
     return int(60000 * int(minutes) + round(1000 * float(seconds)))
 
 
 def time_string(time):
+    """Returns a time string in the format s.ms or m:s.ms if time is more than
+    or equal to 1 minute."""
     s, ms = divmod(int(time), 1000)
     ms = str(ms).zfill(3)
     if s < 60:
@@ -429,3 +437,4 @@ def time_string(time):
     m, s = divmod(time, 60)
     s = str(s).zfill(2)
     return "{}:{}.{}".format(m, s, ms)
+

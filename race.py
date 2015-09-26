@@ -1,12 +1,23 @@
-import minqlbot
 import re
 import random
 import urllib.request
 import json
 import pickle
+import minqlbot
+
 
 # Movement Style: pql or vql
 mode = "pql"
+
+maps = ["arkinholm", "basesiege", "beyondreality", "blackcathedral", "brimstoneabbey", "campercrossings",
+        "campgrounds", "citycrossings", "courtyard", "deepinside", "distantscreams", "divineintermission",
+        "duelingkeeps", "electrocution" "falloutbunker", "finnegans", "fluorescent", "foolishlegacy",
+        "futurecrossings", "gospelcrossings", "henhouse", "industrialrevolution", "infinity", "innersanctums",
+        "ironworks", "japanesecastles", "jumpwerkz", "newcerberon", "overlord", "pillbox", "pulpfriction",
+        "qzpractice1", "qzpractice2", "ragnarok", "railyard", "rebound", "reflux", "repent", "scornforge",
+        "shakennotstirred", "shiningforces", "siberia", "skyward", "spacechamber", "spacectf", "spidercrossings",
+        "stonekeep", "stronghold", "theatreofpain", "theedge", "trinity", "troubledwaters", "warehouse"]
+
 
 class race(minqlbot.Plugin):
     def __init__(self):
@@ -60,7 +71,7 @@ class race(minqlbot.Plugin):
             name = text_list[-7]
             name_clean = re.sub(r"\^[0-9]", "", name).lower()
             time_s = text_list[-1]
-            time = ms(time_s)
+            time = time_ms(time_s)
 
             scores = self.get_map_scores(self.game().short_map, True)
             rank, pb = scores.pb(name_clean)
@@ -160,7 +171,7 @@ class race(minqlbot.Plugin):
             return
 
         scores = self.get_map_scores(map_name, weapons)
-        time = ms(msg[1])
+        time = time_ms(msg[1])
         rank = scores.rank_from_time(time)
         last_rank = scores.last_rank + 1
         if not weapons:
@@ -303,18 +314,11 @@ class race(minqlbot.Plugin):
         self.send_command("team f")
 
     def cmd_random(self, player, msg, channel):
-        maps = ["arkinholm", "basesiege", "beyondreality", "blackcathedral", "brimstoneabbey", "campercrossings",
-                "campgrounds", "citycrossings", "courtyard", "deepinside", "distantscreams", "divineintermission",
-                "duelingkeeps", "electrocution" "falloutbunker", "finnegans", "fluorescent", "foolishlegacy",
-                "futurecrossings", "gospelcrossings", "henhouse", "industrialrevolution", "infinity", "innersanctums",
-                "ironworks", "japanesecastles", "jumpwerkz", "newcerberon", "overlord", "pillbox", "pulpfriction",
-                "qzpractice1", "qzpractice2", "ragnarok", "railyard", "rebound", "reflux", "repent", "scornforge",
-                "shakennotstirred", "shiningforces", "siberia", "skyward", "spacechamber", "spacectf", "spidercrossings",
-                "stonekeep", "stronghold", "theatreofpain", "theedge", "trinity", "troubledwaters", "warehouse"]
         self.callvote("map " + random.choice(maps))
 
     def cmd_help(self, player, msg, channel):
-        channel.reply("Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join !random")
+        channel.reply(
+            "Commands: ^3!(s)all !(s)top !(s)pb !(s)rank !(s)time !(s)ranktime !(s)avg !top100 !update !join !random")
 
     def get_map_scores(self, map_name, weapons):
         current_map = self.game().short_map
@@ -407,18 +411,17 @@ class RaceScores:
             time_diff = ""
         time = time_string(time)
         strafe = "^2(strafe)" if not self.weapons else ""
-        return "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{}{}"\
+        return "^7{} ^2is rank ^3{} ^2of ^3{} ^2with ^3{}{} ^2on ^3{}{}" \
             .format(name, rank, self.last_rank, time, time_diff, self.map_name, strafe)
 
 
-def ms(time_string):
+def time_ms(time_string):
     minutes, seconds = (["0"] + time_string.split(":"))[-2:]
     return int(60000 * int(minutes) + round(1000 * float(seconds)))
 
 
 def time_string(time):
-    time = int(time)
-    s, ms = divmod(time, 1000)
+    s, ms = divmod(int(time), 1000)
     ms = str(ms).zfill(3)
     if s < 60:
         return "{}.{}".format(s, ms)

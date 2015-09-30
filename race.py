@@ -403,10 +403,10 @@ class RaceScores:
 
         if self.leeto:
             name = str(score["PLAYER"])
-            time = score["SCORE"]
+            time = int(score["SCORE"])
         else:
             name = str(score["name"])
-            time = score["score"]
+            time = int(score["score"])
         return name, time
 
     def rank_from_time(self, time):

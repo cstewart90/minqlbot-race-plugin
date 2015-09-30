@@ -406,7 +406,7 @@ class RaceScores:
             time = score["SCORE"]
         else:
             name = str(score["name"])
-            time = int(score["score"])
+            time = score["score"]
         return name, time
 
     def rank_from_time(self, time):
@@ -452,7 +452,8 @@ def time_ms(time_string):
 def time_string(time):
     """Returns a time string in the format s.ms or m:s.ms if time is more than
     or equal to 1 minute."""
-    s, ms = divmod(int(time), 1000)
+    time = int(time)
+    s, ms = divmod(time, 1000)
     ms = str(ms).zfill(3)
     if s < 60:
         return "{}.{}".format(s, ms)
